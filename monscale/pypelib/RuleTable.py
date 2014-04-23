@@ -19,12 +19,12 @@ except:
 	PolicyEngine RuleTable class
 	Encapsulates logic of a simple Rule Table
 '''
-from django_thermostat.pypelib.resolver.Resolver import Resolver
-from django_thermostat.pypelib.Rule import Rule,TerminalMatch
-from django_thermostat.pypelib.parsing.ParseEngine import ParseEngine
-from django_thermostat.pypelib.persistence.PersistenceEngine import PersistenceEngine
-from django_thermostat.pypelib.utils.Logger import Logger
-from django_thermostat.pypelib.utils.Exceptions import *
+from pypelib.resolver.Resolver import Resolver
+from pypelib.Rule import Rule,TerminalMatch
+from pypelib.parsing.ParseEngine import ParseEngine
+from pypelib.persistence.PersistenceEngine import PersistenceEngine
+from pypelib.utils.Logger import Logger
+from pypelib.utils.Exceptions import *
 
 class RuleEntry():
 	rule = None

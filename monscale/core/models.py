@@ -8,7 +8,11 @@ class ScaleAction(models.Model):
     
 
    
-METRICS = ()
+METRICS = (
+    ("cpu_usage", "cpu_usage"),
+    )
+
+   
 OPERANDS = (
     ('>', '>'),
     ('<','<'),
@@ -23,7 +27,7 @@ class Threshold(models.Model):
     metric = models.CharField(max_length=100, choices=METRICS) #metric that is going to be monitored. It'll be a mapping.
     operand = models.CharField(max_length=10, choices=OPERANDS)
     value = models.IntegerField() # the value of the threshold
-    active = models.BooleanField(default=True)
+    
     
             
 class MonitoredService(models.Model):
@@ -32,10 +36,16 @@ class MonitoredService(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     threshold = models.ForeignKey(Threshold)
+    action = models.ForeignKey(ScaleAction)
+    active = models.BooleanField(default=True)
     
-    @static
-    def get_monitored_hosts(self):
-        return MonitoredService.objects.filter(active=True).distinct("host")
+    @staticmethod
+    def get_monitored_hosts():
+        #return MonitoredService.objects.filter(active=True).distinct("host")
+        machines = []
+        for m in MonitoredService.objects.filter(active=True):
+            if m.host not in machines: machines.append(m)
+        return machines
     
     def to_pypelib(self, ):
         
@@ -54,4 +64,4 @@ class MonitoredService(models.Model):
     
 class AlarmIndicator(models.Model):
     service = models.ForeignKey(MonitoredService)
-    timestamp = models.DateTimeField(auto_add_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

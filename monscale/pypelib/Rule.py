@@ -13,9 +13,9 @@ import logging
 	Encapsulates logic of a simple Rule	 
 '''
 
-from django_thermostat.pypelib.Condition import Condition
-from django_thermostat.pypelib.persistence.PersistenceEngine import PersistenceEngine
-from django_thermostat.pypelib.utils.Logger import Logger
+from pypelib.Condition import Condition
+from pypelib.persistence.PersistenceEngine import PersistenceEngine
+from pypelib.utils.Logger import Logger
 
 class TerminalMatch(exceptions.Exception):
 	value = None
