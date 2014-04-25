@@ -1,22 +1,47 @@
 from django.db import models
+import simplejson
+import redis
+from django.conf import settings
 
 # Create your models here.
-
+ACTIONS = (
+    ('launch_cloudforms_vmachine', 'launch_cloudforms_vmachine'),
+    ('destroy_cloudforms_vmachine', 'destroy_cloudforms_vmachine'),
+    )
 class ScaleAction(models.Model):
     name = models.CharField(max_length=100)
-    scale_by = models.IntegerField() #2 will scal up by two. -2 will scale down by 2
+    action = models.CharField(max_length=100, choices=ACTIONS)
+    scale_by = models.IntegerField() #2 will scale up by two. -2 will scale down by 2
     
-
+    def __unicode__(self):
+        return u"%s" % self.name
+    
+    def to_dict(self):
+        return {"name": self.name,
+             "scale_by": self.scale_by,}            
+        
+    def to_redis(self, justification):
+        r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+        data = self.to_dict()
+        data["justificaction"] = justification
+        r.lpush(settings.REDIS_ACTION_LIST, simplejson.dumps(data))
+        
+    @staticmethod
+    def from_redis(data):        
+        data = simplejson.loads(data)
+        return ScaleAction(name=data["name"], scale_by=["scale_by"])
    
 METRICS = (
-    ("cpu_usage", "cpu_usage"),
+    ("cpu_usage_snmp", "cpu_usage_snmp"),
+    ("redis_list_length", 'redis_list_length'),
+    ("http_response_time", "http_response_time"),
     )
 
    
 OPERANDS = (
     ('>', '>'),
     ('<','<'),
-    ('=', '=='),
+    ('=', '='),
     ('<=', '<='),
     ('>=', '>='),    
     )
@@ -28,40 +53,32 @@ class Threshold(models.Model):
     operand = models.CharField(max_length=10, choices=OPERANDS)
     value = models.IntegerField() # the value of the threshold
     
+    def __unicode__(self):
+        return u"%s" % self.assesment
     
             
 class MonitoredService(models.Model):
     name = models.CharField(max_length=300)
-    host = models.CharField(max_length=300)
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
     threshold = models.ForeignKey(Threshold)
     action = models.ForeignKey(ScaleAction)
     active = models.BooleanField(default=True)
+    """
+    depending on the metric that the monitored service is about, you find here 
+    the needed data for that metric
+    """
+    data = models.TextField() 
+     
+    def to_pypelib(self, ):        
+        return "if %s %s %s then accept" % (
+                self.threshold.metric, 
+                self.threshold.operand, 
+                self.threshold.value)     
     
-    @staticmethod
-    def get_monitored_hosts():
-        #return MonitoredService.objects.filter(active=True).distinct("host")
-        machines = []
-        for m in MonitoredService.objects.filter(active=True):
-            if m.host not in machines: machines.append(m)
-        return machines
-    
-    def to_pypelib(self, ):
-        
-        with self.threshold as threshold:
-            out = "if %s %s %s and indicator " % (
-                    threshold.metric, 
-                    threshold.operand, 
-                    threshold.value)
+    def __unicode__(self):
+        return u"%s [%s], action %s" % (self.name, self.threshold, self.action)
 
-        return "%s then accept do %s" % (out, self.action)
-    
-        
-        
-    class Meta:
-        ordering = ["host", ]
     
 class AlarmIndicator(models.Model):
-    service = models.ForeignKey(MonitoredService)
+    service = models.ForeignKey(MonitoredService, related_name='alarm_indicators')
     timestamp = models.DateTimeField(auto_now_add=True)
+    

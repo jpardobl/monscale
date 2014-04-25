@@ -1,5 +1,5 @@
 import logging
-
+from django.conf import settings
 '''
         @author: msune
         @organization: i2CAT, OFELIA FP7
@@ -7,7 +7,7 @@ import logging
        	Simple Logger wrapper 
 '''
 
-logging.basicConfig(format='%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p', level=settings.LOG_LEVEL)
 
 
 class Logger():

@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, logging
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -21,6 +21,8 @@ SECRET_KEY = '&m+p_g*_69h&3sjxt@7$5s&bknxe@%ok2n*dr+2v_o8d0qy3x!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+LOG_LEVEL = logging.INFO
+#if DEBUG: LOG_LEVEL = logging.DEBUG
 
 TEMPLATE_DEBUG = True
 
@@ -53,7 +55,12 @@ ROOT_URLCONF = 'monscale.urls'
 
 WSGI_APPLICATION = 'monscale.wsgi.application'
 
+REDIS_DB = 0
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_ACTION_LIST = "monscale_actions"
 
+ACTION_WORKER_SLEEP_SECS = 10
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -69,7 +76,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 

@@ -13,8 +13,8 @@ from pyparsing import nestedExpr
 	RegexParser class
 '''
 
-from django_thermostat.pypelib.Rule import *
-from django_thermostat.pypelib.Condition import *
+from pypelib.Rule import *
+from pypelib.Condition import *
 
 
 
