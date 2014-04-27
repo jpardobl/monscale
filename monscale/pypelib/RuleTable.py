@@ -19,12 +19,12 @@ except:
 	PolicyEngine RuleTable class
 	Encapsulates logic of a simple Rule Table
 '''
-from pypelib.resolver.Resolver import Resolver
-from pypelib.Rule import Rule,TerminalMatch
-from pypelib.parsing.ParseEngine import ParseEngine
-from pypelib.persistence.PersistenceEngine import PersistenceEngine
-from pypelib.utils.Logger import Logger
-from pypelib.utils.Exceptions import *
+from monscale.pypelib.resolver.Resolver import Resolver
+from monscale.pypelib.Rule import Rule,TerminalMatch
+from monscale.pypelib.parsing.ParseEngine import ParseEngine
+from monscale.pypelib.persistence.PersistenceEngine import PersistenceEngine
+from monscale.pypelib.utils.Logger import Logger
+from monscale.pypelib.utils.Exceptions import *
 
 class RuleEntry():
 	rule = None

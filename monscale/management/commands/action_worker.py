@@ -1,7 +1,7 @@
 import logging, redis, time
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from core.models import ScaleAction
+from monscale.models import ScaleAction
 
 class Command(BaseCommand):
     args = ''

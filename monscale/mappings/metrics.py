@@ -22,19 +22,19 @@ def cpu_usage_snmp(ctxt):
     
 def redis_list_length(ctxt):
     """
-    ctxt["service"].data["redis_host"]
-    ctxt["service"].data["redis_port"]
-    ctxt["service"].data["redis_db"]
-    ctxt["service"].data["redis_list_name"]
+    ctxt["service"].data["redis_host"]  #default: localhost
+    ctxt["service"].data["redis_port"] #default: 6379
+    ctxt["service"].data["redis_db"]  #default: 0
+    ctxt["service"].data["redis_list_name"] 
     """
-    logging.debug("[metric: redis_list_length] Entering  ...")
-    data = load_data(ctxt["service"].data)    
-    
+        
     try:
+        print ctxt["service"].data
+        data = simplejson.loads(ctxt["service"].data)
         r = redis.StrictRedis(
-            host=data["redis_host"], 
-            port=data["redis_port"], 
-            db=data["redis_db"])
+            host=data.get("redis_host", "localhost"), 
+            port=data.get("redis_port", 6379), 
+            db=data.get("redis_db", 0))
         list_length = r.llen(data["redis_list_name"])
     except Exception, er:
         logging.error("[metric: redis_list_length] Exception msg: %s" % er)

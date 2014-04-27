@@ -68,6 +68,16 @@ class MonitoredService(models.Model):
     """
     data = models.TextField() 
      
+    def save(self):
+        """
+        Need to override to validate json in field data
+        """
+        try:
+            simplejson.loads(self.data)
+        except Exception:
+            raise AttributeError("Value for data field is not valid json: %s" % self.data)
+        super(MonitoredService, self).save()
+        
     def to_pypelib(self, ):        
         return "if %s %s %s then accept" % (
                 self.threshold.metric, 

@@ -8,11 +8,11 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'monscale',
-    version = '0.1',
+    version = '0.4',
     packages = ["monscale"],
-    include_package_data = True,
+    include_package_data = False,
     license = 'BSD License',
-    description = 'A Django project that monitor services and acts on them',
+    description = 'A Django app that monitor services and acts on them',
     long_description = README,
 #TODO set the project's home page
     url = 'http://blog.digitalhigh.es',
@@ -29,19 +29,28 @@ setup(
       "redis",
       'pysnmp',
     ),
+    entry_points={
+        "console_scripts": [
+            "evaluate_context = monscale.entrypoints:evaluate_context",
+            "monscale_deploy = monscale.entrypoints:deploy",
+                    ],
+    },
     
   #  test_suite='test_project.tests.runtests',
    # tests_require=("selenium", "requests"),
     classifiers = [
         'Environment :: Web Environment',
+        'Environment :: Console',
         'Framework :: Django',
         'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: System :: Systems Administration',
+        'Topic :: System :: Monitoring',
+        'Topic :: Utilities',
     ],
 )

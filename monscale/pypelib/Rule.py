@@ -13,9 +13,9 @@ import logging
 	Encapsulates logic of a simple Rule	 
 '''
 
-from pypelib.Condition import Condition
-from pypelib.persistence.PersistenceEngine import PersistenceEngine
-from pypelib.utils.Logger import Logger
+from monscale.pypelib.Condition import Condition
+from monscale.pypelib.persistence.PersistenceEngine import PersistenceEngine
+from monscale.pypelib.utils.Logger import Logger
 
 class TerminalMatch(exceptions.Exception):
 	value = None

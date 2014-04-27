@@ -1,5 +1,5 @@
-from core.models import METRICS, Threshold, MonitoredService
-from core.mappings import get_mappings
+from monscale.models import METRICS, Threshold, MonitoredService
+from monscale.mappings import get_mappings
 from pypelib.RuleTable import RuleTable
 import logging
 from django.conf import settings
@@ -7,7 +7,7 @@ from django.conf import settings
 import logging, datetime
 from pytz import timezone
 from django.conf import settings
-from core.models import AlarmIndicator
+from monscale.models import AlarmIndicator
 
 
 def set_indicator(ctxt):

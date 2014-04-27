@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-encoding//monscale/core/migrations/0002_auto__del_field_threshold_active__add_field_monitoredservice_active.py=utf-8
+encoding//monscale/migrations/0002_auto__del_field_threshold_active__add_field_monitoredservice_active.py=utf-8
