@@ -5,6 +5,15 @@ from snmp import get_variable
 def load_data(data):
     return simplejson.loads(data)
 
+def http_response_time(ctxt):
+    """
+    Parses log files from log4ib and retrieves response times for given service_identifier    
+    ctxt["service"].data["service_identifier"]    
+    """
+    logging.debug("[metric: http_response_time] Entering  ...")
+
+    logging.debug("[metric: http_response_time] metric ended")
+    return 15
 
 def cpu_usage_snmp(ctxt):
     """
@@ -23,8 +32,8 @@ def cpu_usage_snmp(ctxt):
 def redis_list_length(ctxt):
     """
     ctxt["service"].data["redis_host"]  #default: localhost
-    ctxt["service"].data["redis_port"] #default: 6379
-    ctxt["service"].data["redis_db"]  #default: 0
+    ctxt["service"].data["redis_port"]  #default: 6379
+    ctxt["service"].data["redis_db"]    #default: 0
     ctxt["service"].data["redis_list_name"] 
     """
         

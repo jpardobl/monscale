@@ -8,6 +8,7 @@ REDIS_DB = 0
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_ACTION_LIST = "monscale_actions"
+REDIS_TRAP_LIST = "monscale_traps"
 ACTION_WORKER_SLEEP_SECS = 10
 MONITOR_WORKER_SLEEP_SECS = 10
 LOG_LEVEL = logging.DEBUG
@@ -15,7 +16,11 @@ LOG_LEVEL = logging.DEBUG
 INSTALLED_APPS += ('monscale', )
 """
 
-
+URLS = """
+urlpatterns += patterns('',
+    url(r'^trap/?', 'monscale.views.trap'),    
+)
+"""
 def deploy(*args, **kwargs): 
     """
     Deploys the Django project and configures it
@@ -25,6 +30,8 @@ def deploy(*args, **kwargs):
     os.chdir(sys.argv[1])
     
     with open(os.path.join(sys.argv[1], "settings.py"), "a") as fw: fw.write(SETTINGS)
+    with open(os.path.join(sys.argv[1], "urls.py"), "a") as fw: fw.write(URLS)
+    
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "%s.settings" % sys.argv[1])
     logging.info("[monscale_deploy] Django project %s successfuly created at ./%s" % (sys.argv[1], sys.argv[1]))
     
@@ -32,4 +39,4 @@ def evaluate_context(*args, **kwargs):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monscale.settings")
 
     print os.environ
-    call_command("evaluate_context", sys.argv)
+    #call_command("evaluate_context", sys.argv)

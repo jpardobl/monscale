@@ -33,9 +33,10 @@ def set_indicator(ctxt):
     
 def evaluate():
     mappings = get_mappings()
+       
     for service in MonitoredService.objects.filter(active=True):
         #logging.debug("############################################### %s ###########################" % service)
-        table = RuleTable("", mappings, "RegexParser",
+        table = RuleTable("Service Rule", mappings, "RegexParser",
              #rawfile,
             "RAWFile",
             None)
@@ -58,4 +59,32 @@ def evaluate():
             except AlarmIndicator.DoesNotExist: pass
             print("No ha cumplido para el servicio: %s" % service)
 
+
+def evaluate_traps():
+    mappings = get_mappings()
+    while True:                
+        monitored_service, rule = MonitoredService.from_redis_trap()
+        if monitored_service is None: break
+        
+        logging.debug("[evaluate_traps] retrieved trap: %s" % trap)
+        table = RuleTable("Trap rule", mappings, "RegexParser",
+             #rawfile,
+            "RAWFile",
+            None)
+        table.addRule(rule)
+        
+        if settings.DEBUG:  table.dump()
     
+        try:
+            ctxt = {"service": monitored_service}
+            table.evaluate(ctxt)
+            logging.info("[evaluate_traps] service: %s has evaluate ALARM" % service)
+            set_indicator(ctxt)
+        except Exception:
+            try:
+                logging.debug("[evaluate_traps] threshold has evaluate no alarm")
+                monitored_service.alarm_indicators.get().delete()
+            except AlarmIndicator.DoesNotExist: pass
+            print("No ha cumplido para el servicio: %s" % service)
+            
+        logging.debug("[evaluate_traps] populated action: %s" % action)
