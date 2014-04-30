@@ -1,9 +1,7 @@
 from monscale.models import METRICS, Threshold, MonitoredService
 from monscale.mappings import get_mappings
 from pypelib.RuleTable import RuleTable
-import logging
 from django.conf import settings
-
 import logging, datetime
 from pytz import timezone
 from django.conf import settings
@@ -22,14 +20,21 @@ def set_indicator(ctxt):
     logging.debug("[set_indicator] Last indicator: %s" % indicator.timestamp)
     time_diff = now - indicator.timestamp
     logging.debug("[set_indicator] Time diff: %s (%ss)" % (time_diff, time_diff.total_seconds()))
-    logging.debug("[set_indicator] Seconds in threshold: %s" % service.threshold.time_limit)
+    
     #TODO Logging
     #if time the last indicator is prior to the seconds in threshold, the action is triggered
-    if time_diff.total_seconds() > float(service.threshold.time_limit):
-        service.action.to_redis(str(service))
-        logging.debug("[set_indicator] Action: %s is queued" % service.action)
+    
+    for threshold in service.threshold.all():
+        logging.debug("[set_indicator] Seconds in threshold: %s" % threshold)
+        if time_diff.total_seconds() < float(threshold.time_limit):
+            logging.debug("[set_indicator] exiting without triggering actions, reason: %s state alarm not enough time" % threshold)
+            return
+    
+    for action in service.action.all(): 
+        action.to_redis(str(service))
+        logging.debug("[set_indicator] Action: %s is queued" % action)
         indicator.delete()
-    logging.debug("[set_indicator] exiting for service: %s" % service)
+    logging.debug("[set_indicator] exiting")
     
 def evaluate():
     mappings = get_mappings()
@@ -66,7 +71,7 @@ def evaluate_traps():
         monitored_service, rule = MonitoredService.from_redis_trap()
         if monitored_service is None: break
         
-        logging.debug("[evaluate_traps] retrieved trap: %s" % trap)
+        logging.debug("[evaluate_traps] retrieved trap: %s" % rule)
         table = RuleTable("Trap rule", mappings, "RegexParser",
              #rawfile,
             "RAWFile",
@@ -78,13 +83,13 @@ def evaluate_traps():
         try:
             ctxt = {"service": monitored_service}
             table.evaluate(ctxt)
-            logging.info("[evaluate_traps] service: %s has evaluate ALARM" % service)
+            logging.info("[evaluate_traps] service: %s has evaluate ALARM" % monitored_service)
             set_indicator(ctxt)
-        except Exception:
+        except Exception, er:
             try:
-                logging.debug("[evaluate_traps] threshold has evaluate no alarm")
+                logging.debug("[evaluate_traps] threshold has evaluate no alarm, exception: %s" % er)
                 monitored_service.alarm_indicators.get().delete()
             except AlarmIndicator.DoesNotExist: pass
-            print("No ha cumplido para el servicio: %s" % service)
+            print("No ha cumplido para el servicio: %s" % monitored_service)
             
-        logging.debug("[evaluate_traps] populated action: %s" % action)
+        

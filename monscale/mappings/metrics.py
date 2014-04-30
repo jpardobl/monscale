@@ -4,8 +4,9 @@ from django.conf import settings
 
 
 #logging.basicConfig(level=logging.DEBUG)
-def load_data(data):
+def _load_data(data):
     return simplejson.loads(data)
+
 
 
 def snmp_oid(ctxt):
@@ -17,7 +18,7 @@ def snmp_oid(ctxt):
     ctxt["service"].data["snmp_variable"]    
     """
     logging.debug("[metric: snmp_oid] Entering  ...")   
-    data = load_data(ctxt["service"].data)
+    data = _load_data(ctxt["service"].data)
     try:
         ret = get_variable(
             data.get("host", "localhost"), 
@@ -43,7 +44,7 @@ def redis_list_length(ctxt):
         
     try:
         #print ctxt["service"].data
-        data = load_data(ctxt["service"].data)
+        data = _load_data(ctxt["service"].data)
         r = redis.StrictRedis(
             host=data.get("redis_host", "localhost"), 
             port=data.get("redis_port", 6379), 

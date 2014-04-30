@@ -28,6 +28,7 @@ setup(
       "pytz",
       "redis",
       'pysnmp',
+      #'netsnmp',
     ),
     entry_points={
         "console_scripts": [

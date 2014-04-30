@@ -7,14 +7,12 @@ class Command(BaseCommand):
     args = ''
     help = 'Retrieve queued actions and execute them.'
 
-
-
     def handle(self, *args, **options):
 #        logging.basicConfig(level=logging.DEBUG)
 
         while True:
-            logging.debug("[action_worker] starting loop ...")            
+            logging.debug("[trap_worker] starting loop ...")            
             
             evaluate_traps()
-            logging.debug("[action_worker] going to sleep for %ss" % settings.ACTION_WORKER_SLEEP_SECS)
+            logging.debug("[trap_worker] going to sleep for %ss" % settings.ACTION_WORKER_SLEEP_SECS)
             time.sleep(settings.ACTION_WORKER_SLEEP_SECS)

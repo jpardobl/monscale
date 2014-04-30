@@ -2,7 +2,22 @@ from django.test import TestCase
 from models import *
 # Create your tests here.
 from django.conf import settings
+from monscale.mappings.metrics import *
+from monscale.mappings.snmp import get_variable
 
+
+SNMP_HOST = "172.21.229.225"
+SNMP_PORT = 161
+SNMP_COMMUNITY = "net1000"
+
+
+class MetricTest(TestCase):
+    def setUp(self):
+        pass
+    
+    def test_snmp(self):
+        print(get_variable(SNMP_HOST, SNMP_PORT, SNMP_COMMUNITY, ".1.3.6.1.4.1.2021.11.9.0"))
+    
 
 class TrapTest(TestCase):
     

@@ -31,6 +31,13 @@ The Django app can be installed just by issuing the following command, which ins
 pip install monscale
 ```
 
+The project also needs the binding from netsnmp installed on the system. Under Ubuntu the package for this 
+is python-netsnmp, para instalarlo:
+
+```
+apt-get install python-netsnmp
+```
+
 Once installation is finished it's time to create the Django project under which the app will run. It
 is recomended to do this by issuing the following command, as it not only creates the project, but
 it also adapts its settings.py file with the configuration needed by the app.

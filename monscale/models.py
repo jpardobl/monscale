@@ -1,5 +1,5 @@
 from django.db import models
-import simplejson, redis, re
+import simplejson, redis, re, logging
 from django.conf import settings
 
 # Create your models here.
@@ -23,8 +23,10 @@ class ScaleAction(models.Model):
     def to_redis(self, justification):
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
         data = self.to_dict()
-        data["justificaction"] = justification
-        r.lpush(settings.REDIS_ACTION_LIST, simplejson.dumps(data))
+        data["justification"] = justification
+        dato = simplejson.dumps(data)
+        r.lpush(settings.REDIS_ACTION_LIST, dato)
+        logging.debug("[ScaleAction.to_redis] %s " % dato)
         
     @staticmethod
     def from_redis(data):        
