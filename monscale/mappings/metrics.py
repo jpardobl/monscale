@@ -1,32 +1,36 @@
 import logging, simplejson, redis
 from snmp import get_variable
+from django.conf import settings
+
 
 #logging.basicConfig(level=logging.DEBUG)
 def load_data(data):
     return simplejson.loads(data)
 
-def http_response_time(ctxt):
-    """
-    Parses log files from log4ib and retrieves response times for given service_identifier    
-    ctxt["service"].data["service_identifier"]    
-    """
-    logging.debug("[metric: http_response_time] Entering  ...")
 
-    logging.debug("[metric: http_response_time] metric ended")
-    return 15
-
-def cpu_usage_snmp(ctxt):
+def snmp_oid(ctxt):
     """
-    ctxt["service"].data["host"]
-    ctxt["service"].data["port"]
-    ctxt["service"].data["snmp_read_comunity"]
+    ctxt["service"].data["host"]                  #default: localhost
+    ctxt["service"].data["port"]                  #default: 514
+    ctxt["service"].data["snmp_read_comunity"]    #default: public
     ctxt["service"].data["snmp_mib"]
     ctxt["service"].data["snmp_variable"]    
     """
-    logging.debug("[metric: cpu_usage_snmp] Entering  ...")
-
-    logging.debug("[metric: cpu_usage_snmp] metric ended")
-    return 60
+    logging.debug("[metric: snmp_oid] Entering  ...")   
+    data = load_data(ctxt["service"].data)
+    try:
+        ret = get_variable(
+            data.get("host", "localhost"), 
+            data.get("port", 514),
+            data.get("snmp_read_comunity", "public"),
+            data["snmp_variable"])
+    
+    except Exception, er:
+        logging.error("[metric: snmp_oid] snmp query ERROR: %s" % er)
+        return None
+    logging.debug("[metric: snmp_oid] snmp query returned: %s" % ret)
+    logging.debug("[metric: snmp_oid] metric ended")
+    return ret
     
     
 def redis_list_length(ctxt):
@@ -38,8 +42,8 @@ def redis_list_length(ctxt):
     """
         
     try:
-        print ctxt["service"].data
-        data = simplejson.loads(ctxt["service"].data)
+        #print ctxt["service"].data
+        data = load_data(ctxt["service"].data)
         r = redis.StrictRedis(
             host=data.get("redis_host", "localhost"), 
             port=data.get("redis_port", 6379), 
@@ -53,12 +57,7 @@ def redis_list_length(ctxt):
     return list_length
 
 
-def http_response_time(ctxt):
-    pass
-
-
 mappings = [
-    cpu_usage_snmp,
+    snmp_oid,
     redis_list_length,
-    http_response_time,
     ]
