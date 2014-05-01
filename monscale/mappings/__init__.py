@@ -1,6 +1,6 @@
-import metrics
+import metrics, actions
 
-modules = [metrics, ]
+modules = [metrics, actions]
 
 
 def get_mappings():

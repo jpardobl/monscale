@@ -1,12 +1,16 @@
 from django.db import models
 import simplejson, redis, re, logging
 from django.conf import settings
+from monscale.mappings import get_mappings
+
 
 # Create your models here.
 ACTIONS = (
     ('launch_cloudforms_vmachine', 'launch_cloudforms_vmachine'),
     ('destroy_cloudforms_vmachine', 'destroy_cloudforms_vmachine'),
     )
+
+
 class ScaleAction(models.Model):
     name = models.CharField(max_length=100, unique=True)
     action = models.CharField(max_length=100, choices=ACTIONS)
@@ -27,11 +31,25 @@ class ScaleAction(models.Model):
         dato = simplejson.dumps(data)
         r.lpush(settings.REDIS_ACTION_LIST, dato)
         logging.debug("[ScaleAction.to_redis] %s " % dato)
+
+    def execute(self, justification):
+        logging.debug("[ScaleAction.execute] launching action: %s; justification: %s" % 
+                      (self.name, justification))
+        mappings = get_mappings()
+        func = mappings[self.action]
+        func(self.data)
+        logging.debug("[ScaleAction.execute] finnished")
         
     @staticmethod
     def from_redis(data):        
         data = simplejson.loads(data)
-        return ScaleAction(name=data["name"], scale_by=["scale_by"])
+        try:
+            act = ScaleAction.objects.get(name=data["name"])
+            return (act, data["justification"])
+        except ScaleAction.DoesNotExist, er:
+            logging.error("[ScaleAction.from_redis] Action %s came from Redis but not in DB" % data["name"])
+            raise er
+        
    
     def save(self):
         """
@@ -74,9 +92,9 @@ class MonitoredService(models.Model):
     threshold = models.ManyToManyField(Threshold, blank=True)
     action = models.ManyToManyField(ScaleAction)
     active = models.BooleanField(default=True)
+    wisdom_time = models.IntegerField(default=120) #secs from last time actions where launch before launching more
     """
-    depending on the metric that the monitored service is about, you find here 
-    the needed data for that metric
+    depending on the action, you find here the needed data for that action
     """
     data = models.TextField() 
      
@@ -136,6 +154,10 @@ class MonitoredService(models.Model):
 
     
 class AlarmIndicator(models.Model):
-    service = models.ForeignKey(MonitoredService, related_name='alarm_indicators')
+    service = models.ForeignKey(MonitoredService, related_name='alarm_indicators', unique=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+class ActionIndicator(models.Model):
+    service = models.ForeignKey(MonitoredService, related_name='action_indicators', unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
