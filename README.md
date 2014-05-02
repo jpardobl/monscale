@@ -4,13 +4,13 @@ monscale
 Small system meant to monitor services and acts on them based on rules. Monscale is a Django app.
 
 The app is able to actively monitor services and to passively listen to alerts from other systems.
+The metrics monitored and the alerts received are sent to a rule engine. Based on the rules, the system
+sends scale actions to the monitored systems. Metrics and actions are implemented by mappings, thus 
+the develoment of new actions and metrics is straight-forward.
 
-The app resides mainly in three commands and an interface to receive alerts. 
-The context monitor and the actions executor. Also it's got
-a web interface to manage its configuration.
-The monitor is a loop that retrieves from the DB the info about the MonitoredServices.
+The pic below shows the a summary of the components.
 
-![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/03/haweb1-290x300.jpg)
+![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/05/components-1024x526.png)
 
 Each MonitoredService is the relation of:
 
@@ -21,10 +21,8 @@ Each MonitoredService is the relation of:
     - An action must be triggered if the condition was True more seconds than the 
     shown by the threshold.
     
-When an action is triggered, its queued in a Redis list.
-
-The Action Executor is a daemon that collects the actions queued at the Redis list 
-and executes them.
+Both actions and alerts, are queued in an Redis queue, waiting for the workers to retrieve them from 
+the queues. This makes the system scalable itself.
 
 
 Installation
