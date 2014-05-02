@@ -1,18 +1,23 @@
 monscale
 ========
 
-Daemond that monitor services and acts on them based on rules. Monscale is a Django app.
+Small system meant to monitor services and acts on them based on rules. Monscale is a Django app.
 
+The app is able to actively monitor services and to passively listen to alerts from other systems.
 
-The app resides mainly in two commands, the monitor and the actions executor. Also it's got
+The app resides mainly in three commands and an interface to receive alerts. 
+The context monitor and the actions executor. Also it's got
 a web interface to manage its configuration.
 The monitor is a loop that retrieves from the DB the info about the MonitoredServices.
+
+![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/03/haweb1-290x300.jpg)
 
 Each MonitoredService is the relation of:
 
     - A metric.
     - A condition for that metric
     - A time the condition must be True
+    - A wisdom time, this means time from the las triggered action while more actions wont be triggered.
     - An action must be triggered if the condition was True more seconds than the 
     shown by the threshold.
     
