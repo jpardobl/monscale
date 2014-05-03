@@ -78,6 +78,12 @@ To start the actions daemon issue the following command at the project's dir:
 ./manage.py action_worker
 ```
 
+To start the alerts daemon issue the following command at the project's dir:
+
+```
+./manage.py traps_worker
+```
+
 To start the development web management interface (from project's dir):
 
 ```

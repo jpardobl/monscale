@@ -14,15 +14,31 @@ ACTIONS = (
 class ScaleAction(models.Model):
     name = models.CharField(max_length=100, unique=True)
     action = models.CharField(max_length=100, choices=ACTIONS)
-    scale_by = models.IntegerField() #2 will scale up by two. -2 will scale down by 2
     data = models.TextField()
     
     def __unicode__(self):
         return u"%s" % self.name
     
     def to_dict(self):
-        return {"name": self.name,
-             "scale_by": self.scale_by,}            
+        return {
+            "type": u"ScaleAction",
+            "name": unicode(self.name),
+            "action": unicode(self.action),
+            "data": simplejson.loads(self.data),
+            }  
+               
+    @staticmethod
+    def from_json(data):
+        data = simplejson.loads(data)
+        a =  ScaleAction(
+            name=data["name"],
+            action=data["action"],
+            data=simplejson.dumps(data["data"]))
+        a.save()
+        return a
+    
+    def to_json(self):
+        return simplejson.dumps(self.to_dict())
         
     def to_redis(self, justification):
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -86,6 +102,30 @@ class Threshold(models.Model):
     def __unicode__(self):
         return u"%s" % self.assesment
     
+    def to_dict(self):
+        return {
+            "type": u"Threshold",
+            "assesment": unicode(self.assesment),
+            "time_limit": self.time_limit,
+            "metric": unicode(self.metric),
+            "operand": unicode(self.operand),
+            "value": self.value, }
+        
+    def to_json(self):
+        return simplejson.dumps(self.to_dict())
+    
+    @staticmethod
+    def from_json(data):
+        data = simplejson.loads(data)
+        t = Threshold(
+            assesment=data["assesment"],
+            time_limit=data["time_limit"],
+            metric=data["metric"],
+            operand=data["operand"],
+            value=data["value"]
+            )
+        t.save()
+        return t
             
 class MonitoredService(models.Model):
     name = models.CharField(max_length=300, unique=True)
@@ -108,10 +148,37 @@ class MonitoredService(models.Model):
             raise AttributeError("Value for data field is not valid json: %s" % self.data)
         super(MonitoredService, self).save()
     
+    def to_dict(self):
+        return {
+            "type": u"MonitoredService",
+            "name": unicode(self.name),
+            "threshold": [x.assesment for x in self.threshold.all()],
+            "action": [x.name for x in self.action.all()],
+            "active": self.active,
+            "wisdom_time": self.wisdom_time,
+            "data": simplejson.loads(self.data)}
+        
+        
+        
     def to_json(self):
-        return simplejson.dumps({
-            "name": self.name,
-            })
+        return simplejson.dumps(self.to_dict())
+    
+    @staticmethod
+    def from_json(data):
+        data = simplejson.loads(data)
+     
+        ms = MonitoredService(
+            name=data["name"],
+            active=data["active"],
+            wisdom_time=data["wisdom_time"],
+            data=simplejson.dumps(data["data"]))
+        ms.save()
+        for d in data["threshold"]:
+            print d
+            
+        [ms.threshold.add(Threshold.objects.get(assesment=d)) for d in data["threshold"]]
+        [ms.action.add(ScaleAction.objects.get(name=d)) for d in data["action"]]
+        return ms
         
     def to_pypelib(self, value_for_metric=None):       
         out = "if ("
