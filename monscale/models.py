@@ -137,6 +137,7 @@ class MonitoredService(models.Model):
     depending on the action, you find here the needed data for that action
     """
     data = models.TextField() 
+    
      
     def save(self):
         """

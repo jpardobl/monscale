@@ -1,5 +1,6 @@
 import logging, simplejson
 from monscale.mappings.cloudforms import start_vm
+from monscale.mappings.aws import publish_msg_to_sns_topic
 
 
 def _load_data(data):
@@ -33,5 +34,6 @@ def destroy_cloudforms_vmachine(data):
     pass
 
 mappings = [
-    launch_cloudforms_vmachine,    
+    launch_cloudforms_vmachine,   
+    publish_msg_to_sns_topic, 
     ]

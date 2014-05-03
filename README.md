@@ -17,14 +17,27 @@ Each MonitoredService is the relation of:
     - A metric.
     - A condition for that metric
     - A time the condition must be True
-    - A wisdom time, this means time from the las triggered action while more actions wont be triggered.
+    - A wisdom time, this means time from the last triggered action while more actions wont be triggered.
     - An action must be triggered if the condition was True more seconds than the 
     shown by the threshold.
     
 Both actions and alerts, are queued in an Redis queue, waiting for the workers to retrieve them from 
 the queues. This makes the system scalable itself.
 
+Featured Service Escalation Actions
+--------------------------
 
+ - Cloudforms 3.0:
+      - Send virtual machine provision request
+ - Amazon Web Services
+      - Publish messages to SNS topic
+          
+Featured Monitoring Metrics
+--------------------------
+
+ - Retrieve SNMPv1 and SNMPv2 OID
+ - Retrieve Redis list length
+ 
 Installation
 ------------
 
