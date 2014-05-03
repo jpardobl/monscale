@@ -1,12 +1,12 @@
 monscale
 ========
 
-Small system meant to monitor services and acts on them based on rules. Monscale is a Django app.
+Small system meant to monitor services and act on them based on rules. Monscale is a Django app.
 
 The app is able to actively monitor services and to passively listen to alerts from other systems.
 The metrics monitored and the alerts received are sent to a rule engine. Based on the rules, the system
 sends scale actions to the monitored systems. Metrics and actions are implemented by mappings, thus 
-the develoment of new actions and metrics is straight-forward.
+the development of new actions and metrics is straight-forward.
 
 The pic below shows the a summary of the components.
 
