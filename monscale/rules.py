@@ -27,7 +27,7 @@ def set_indicator(ctxt):
     for threshold in service.threshold.all():
         logging.debug("[set_indicator] Seconds in threshold: %s" % threshold)
         if time_diff.total_seconds() < float(threshold.time_limit):
-            logging.debug("[set_indicator] exiting without triggering actions, reason: %s state alarm not enough time" % threshold)
+            logging.info("[set_indicator] exiting without triggering actions, reason: %s state alarm not enough time" % threshold)
             return
     #checking wisdom time is passed
     logging.debug("[set_indicator] checking wisdom time before launching any action")
@@ -44,7 +44,7 @@ def set_indicator(ctxt):
         time_diff = now - aindicator.timestamp
         logging.debug("[set_indicator] Time diff: %s (%ss)" % (time_diff, time_diff.total_seconds()))
         if time_diff.total_seconds() < float(service.wisdom_time):
-            logging.debug("[set_indicator] Wisdom time not over, not launching actions")
+            logging.info("[set_indicator] Wisdom time not over, not launching actions")
             """
             deleting threshold indicator thus, next indicator will start after the wisdom
             """
@@ -59,7 +59,7 @@ def set_indicator(ctxt):
     #lets launch the actions
     for action in service.action.all(): 
         action.to_redis(str(service))
-        logging.debug("[set_indicator] Action: %s is queued" % action)
+        logging.info("[set_indicator] Action: %s is queued" % action)
     indicator.delete()
     ActionIndicator(service=service).save()
 

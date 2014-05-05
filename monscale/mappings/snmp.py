@@ -1,6 +1,9 @@
 
 class SNMPError(Exception): pass
-import netsnmp
+try:
+    import netsnmp
+except:
+    import pynetsnmp as netsnmp
 
 
 

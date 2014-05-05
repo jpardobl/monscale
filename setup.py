@@ -8,8 +8,19 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'monscale',
-    version = '0.10',
-    packages = ["monscale"],
+    version = '0.11',
+    packages = [
+        "monscale", 
+        "monscale.management", 
+        "monscale.management.commands",
+        "monscale.mappings",
+        "monscale.pypelib",
+        "monscale.pypelib.parsing",
+        "monscale.pypelib.parsing.drivers",
+        "monscale.pypelib.persistence",
+        "monscale.pypelib.resolver",
+        "monscale.pypelib.utils"
+        ],
     include_package_data = False,
     license = 'BSD License',
     description = 'A Django app that monitor services and acts on them',
