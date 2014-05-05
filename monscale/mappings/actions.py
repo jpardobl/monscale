@@ -1,5 +1,5 @@
-import logging, simplejson
-from monscale.mappings.cloudforms import start_vm
+import simplejson
+from monscale.mappings.cloudforms import start_vm, delete_vm
 from monscale.mappings.aws import publish_msg_to_sns_topic
 
 
@@ -16,6 +16,7 @@ def launch_cloudforms_vmachine(data):
     data["os"]
     data["environment"]
     data["hostgroup"]
+    data["monitoredservice"]
     """
   #  logging.debug("[launch_cloudforms_vmachine] NOT LAUNCHING:::::::MOCKED:::::::::")
   #  return
@@ -28,14 +29,20 @@ def launch_cloudforms_vmachine(data):
         data["os"],
         data["environment"],
         data["hostgroup"],
+        data["monitoredservice"]
         )
 
 def destroy_cloudforms_vmachine(data):
-    pass
-
-
+    """
+    data["monitoredservice"]
+    """
+    data = _load_data(data)
+    delete_vm(
+        data["monitoredservice"]
+        )
 
 mappings = [
     launch_cloudforms_vmachine,   
+    destroy_cloudforms_vmachine,
     publish_msg_to_sns_topic, 
     ]
