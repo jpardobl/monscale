@@ -205,7 +205,7 @@ class MonitoredService(models.Model):
     @staticmethod        
     def from_redis_trap():
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
-        trap = r.lpop(settings.REDIS_TRAP_LIST)
+        trap = r.rpop(settings.REDIS_TRAP_LIST)
         if trap is None: return (None, None)
         trap = simplejson.loads(trap)
         #print trap

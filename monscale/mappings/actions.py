@@ -33,6 +33,8 @@ def launch_cloudforms_vmachine(data):
 def destroy_cloudforms_vmachine(data):
     pass
 
+
+
 mappings = [
     launch_cloudforms_vmachine,   
     publish_msg_to_sns_topic, 
