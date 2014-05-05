@@ -1,22 +1,7 @@
-from SOAPpy import Config, HTTPTransport, SOAPAddress, WSDL
+from suds.client import Client
+from suds.xsd.doctor import Import, ImportDoctor
 from django.conf import settings
 
-
-URL    = 'cfwdsl'
-
-class mytransport(HTTPTransport):
-    username = None
-    passwd = None
-    @classmethod
-    def setAuthentication(cls,u,p):
-        cls.username = u
-        cls.passwd = p
-    def call(self, addr, data, namespace, soapaction=None, encoding=None,http_proxy=None, config=Config):
-        if not isinstance(addr, SOAPAddress):
-            addr=SOAPAddress(addr, config)
-        if self.username != None:
-            addr.user = self.username+":"+self.passwd
-        return HTTPTransport.call(self, addr, data, namespace, soapaction,encoding, http_proxy, config)
 
 def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, name=None):
     template_name = "k6"
@@ -34,11 +19,10 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, name=Non
             mail, settings.CLOUDFORMS_USERNAME, hostgroup, hostgroup, environment, mtype, os, role)
     tags          = ''
     options       = ''
-    mytransport.setAuthentication(settings.CLOUDFORMS_USERNAME, settings.CLOUDFORMS_PASSWORD)
-    proxy =  WSDL.Proxy(URL, transport=mytransport)
-    print proxy.VmProvisionRequest(
-        version=settings.CLOUDFORMS_API_VERSION, 
-        templateFields=templateFields, 
-        vmFields=vmFields, 
-        requester=requester, 
-        tags=tags, options=options)
+    imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
+    imp.filter.add('urn:ActionWebService')
+    doctor = ImportDoctor(imp)
+    doctor = ImportDoctor(imp)
+    proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_USERNAME, doctor=doctor)
+    print proxy.service.EVMProvisionRequestEx(version='1.1', templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
+

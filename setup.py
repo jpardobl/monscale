@@ -24,12 +24,11 @@ setup(
     install_requires = (
       "Django==1.6",
       "simplejson",
+      'suds',
       "pyparsing",
       "pytz",
       "redis",
-      'pysnmp',
       "boto",
-      #'netsnmp',
     ),
     entry_points={
         "console_scripts": [
