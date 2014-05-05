@@ -22,7 +22,6 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, name=Non
     imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
     imp.filter.add('urn:ActionWebService')
     doctor = ImportDoctor(imp)
-    doctor = ImportDoctor(imp)
     proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_USERNAME, doctor=doctor)
     print proxy.service.EVMProvisionRequestEx(version='1.1', templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
 
