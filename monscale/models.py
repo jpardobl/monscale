@@ -55,6 +55,7 @@ class ScaleAction(models.Model):
         func = mappings[self.action]
         func(self.data)
         logging.debug("[ScaleAction.execute] finnished")
+        ExecutedAction(action=self, justification=justification).save()
         
     @staticmethod
     def from_redis(data):        
@@ -217,6 +218,12 @@ class MonitoredService(models.Model):
     def __unicode__(self):
         return u"if %s" % (self.name)
 
+
+class ExecutedAction(models.Model):
+    action = models.ForeignKey(ScaleAction)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    justification = models.TextField()
+    
 
     
 class AlarmIndicator(models.Model):

@@ -5,6 +5,10 @@ class ScaleActionAdmin(admin.ModelAdmin):
     pass
 admin.site.register(ScaleAction, ScaleActionAdmin)
 
+class ExecutedActionAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(ExecutedAction, ExecutedActionAdmin)
+
 class ThresholdAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Threshold, ThresholdAdmin)
