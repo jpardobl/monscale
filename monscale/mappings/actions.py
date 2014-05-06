@@ -21,6 +21,7 @@ def launch_cloudforms_vmachine(data):
   #  logging.debug("[launch_cloudforms_vmachine] NOT LAUNCHING:::::::MOCKED:::::::::")
   #  return
     data = _load_data(data)
+    print data
     start_vm(
         data["cores"],
         data["megabytes"],
