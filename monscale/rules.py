@@ -57,9 +57,10 @@ def set_indicator(ctxt):
     except: pass
 
     try:
-        if service.scale_type == 'down' and service.current_nodes <= service.scale_limit: raise AttributeError("Escalation low limit not passed")             
-        if service.current_nodes >= service.scale_limit: raise AttributeError("Escalation high limit not passed")
-    except AttributeError:
+        if service.scale_type == 'down' and service.infrastructure.current_nodes <= service.infrastructure.min_nodes: raise AttributeError("Escalation low limit not passed")             
+        if service.infrastructure.current_nodes >= service.infrastructure.max_nodes: raise AttributeError("Escalation high limit not passed")
+    except AttributeError, er:
+        logging.info("[set_indicator][scale_limit] %s" % str(er))
         return  
     
     
