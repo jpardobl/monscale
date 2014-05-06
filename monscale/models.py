@@ -57,6 +57,11 @@ class ScaleAction(models.Model):
         logging.debug("[ScaleAction.execute] finnished")
         ExecutedAction(action=self, justification=justification).save()
         
+        incremental = 1 if self.service.scale_type == 'up' else -1
+        
+        self.service.current_nodes += incremental
+        self.service.save()
+        
     @staticmethod
     def from_redis():        
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -133,13 +138,21 @@ class Threshold(models.Model):
             )
         t.save()
         return t
-            
+
+SCALE_TYPE = (
+    ('up', 'UP'),
+    ('down', 'DOWN'),
+    )  
 class MonitoredService(models.Model):
     name = models.CharField(max_length=300, unique=True)
     threshold = models.ManyToManyField(Threshold, blank=True)
     action = models.ManyToManyField(ScaleAction)
     active = models.BooleanField(default=True)
     wisdom_time = models.IntegerField(default=120) #secs from last time actions where launch before launching more
+    current_nodes = models.IntegerField(default=0)
+    max_nodes = models.IntegerField(default=8)
+    min_nodes = models.IntegerField(default=1)
+    scale_type = models.CharField(max_length=10, choices=SCALE_TYPE, default='UP')
     """
     depending on the action, you find here the needed data for that action
     """

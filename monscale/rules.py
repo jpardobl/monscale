@@ -56,6 +56,16 @@ def set_indicator(ctxt):
         aindicator.delete()
     except: pass
 
+    if service.scale_type == 'down':
+        if service.current_nodes <= service.min_nodes:
+            logging.info("[set_indicator][scale_limit] not scaling because current (%s) nodes under min limit (%s)" % (service.current_nodes, service.min_nodes)) 
+            return 
+    else:
+        if service.current_nodes >= service.max_nodes:
+            logging.info("[set_indicator][scale_limit] not scaling because current (%s) nodes over max limit (%s)" % (service.current_nodes, service.max_nodes)) 
+            return
+    
+    
     #lets launch the actions
     for action in service.action.all(): 
         action.to_redis(str(service))
