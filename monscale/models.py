@@ -58,7 +58,13 @@ class ScaleAction(models.Model):
         ExecutedAction(action=self, justification=justification).save()
         
     @staticmethod
-    def from_redis(data):        
+    def from_redis():        
+        r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+        data = r.rpop(settings.REDIS_ACTION_LIST)
+        if data is None: raise ValueError("Action Queue is empty")
+                
+        logging.debug("[action_worker] retrieved action: %s" % data)
+                
         data = simplejson.loads(data)
         try:
             act = ScaleAction.objects.get(name=data["name"])

@@ -16,7 +16,17 @@ logging.disable(logging.CRITICAL)
 class SOAPTest(TestCase):
 
     def test_create(self):
-	    launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
+	launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
+
+    def setUp2(self):
+
+        ScaleAction(name="prueba", action="launch_cloudforms_vmachine", data='{"environment": "lab", "hostgroup": "indexer", "mtype": "grid", "role": "ut", "megabytes": 1024, "cores": 1, "os": "l", "monitoredservice": "logstash"}').save()
+    def test_create2(self):
+        self.setUp2()         
+        a = ScaleAction.objects.get()
+        a.to_redis("pruba")
+        action, jutification = ScaleAction.from_redis()
+        action.execute(jutification)        
 
     def test_delete(self):
         destroy_cloudforms_vmachine('{"monitoredservice": "logstash"}')
