@@ -4,7 +4,7 @@ from models import *
 from django.conf import settings
 from monscale.mappings.metrics import *
 from monscale.mappings.snmp import get_variable
-from monscale.mappings.actions import launch_cloudforms_vmachine
+from monscale.mappings.actions import launch_cloudforms_vmachine, destroy_cloudforms_vmachine
 import logging
 
 SNMP_HOST = "172.21.229.225"
@@ -16,7 +16,10 @@ logging.disable(logging.CRITICAL)
 class SOAPTest(TestCase):
 
     def test_create(self):
-	launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
+	    launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
+
+    def test_delete(self):
+        destroy_cloudforms_vmachine('{"monitoredservice": "logstash"}')
 
 class MetricTest(TestCase):
     def setUp(self):
