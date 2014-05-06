@@ -26,6 +26,19 @@ class MetricTest(TestCase):
         print(get_variable(SNMP_HOST, SNMP_PORT, SNMP_COMMUNITY, ".1.3.6.1.4.1.2021.11.9.0"))
     
 
+class F5Test(TestCase):
+    
+    def test_add_member(self):
+        from monscale.mappings.actions import add_f5_pool_members
+        
+        add_f5_pool_members('{"f5_host": "172.21.200.49","f5_username": "admin", "f5_password": "lab5000", "pool_name": "pepito","member_list": ["172.21.200.184:80"]}')
+
+    def test_del_member(self):
+        from monscale.mappings.actions import add_f5_pool_members, del_f5_pool_members
+        
+        del_f5_pool_members('{"f5_host": "172.21.200.49","f5_username": "admin", "f5_password": "lab5000", "pool_name": "pepito","member_list": ["172.21.200.184:80"]}')
+    
+        
 class TrapTest(TestCase):
     
     def setUp(self):

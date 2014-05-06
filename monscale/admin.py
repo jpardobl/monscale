@@ -17,3 +17,6 @@ class AlarmIndicatorAdmin(admin.ModelAdmin):
     pass
 admin.site.register(AlarmIndicator, AlarmIndicatorAdmin)
 
+class ActionIndicatorAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(ActionIndicator, ActionIndicatorAdmin)

@@ -211,9 +211,7 @@ class MonitoredService(models.Model):
         #print trap
         return (
                 MonitoredService.objects.get(name=trap["obj"]["name"]),
-                trap["rule"],
-                )
-                
+                trap["rule"],)                
         
         
     def __unicode__(self):

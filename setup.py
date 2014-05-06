@@ -8,7 +8,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'monscale',
-    version = '0.11',
+    version = '0.12',
     packages = [
         "monscale", 
         "monscale.management", 
@@ -40,6 +40,7 @@ setup(
       "pytz",
       "redis",
       "boto",
+      "requests",
     ),
     entry_points={
         "console_scripts": [
