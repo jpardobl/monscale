@@ -150,8 +150,7 @@ class MonitoredService(models.Model):
     active = models.BooleanField(default=True)
     wisdom_time = models.IntegerField(default=120) #secs from last time actions where launch before launching more
     current_nodes = models.IntegerField(default=0)
-    max_nodes = models.IntegerField(default=8)
-    min_nodes = models.IntegerField(default=1)
+    scale_limit = models.IntegerField(default=0)    
     scale_type = models.CharField(max_length=10, choices=SCALE_TYPE, default='UP')
     """
     depending on the action, you find here the needed data for that action
