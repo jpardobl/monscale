@@ -1,6 +1,10 @@
 from suds.client import Client
 from suds.xsd.doctor import Import, ImportDoctor
 from django.conf import settings
+import logging
+
+#logging.disable(logging.CRITICAL)
+
 
 def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitoredservice, name=None):
     template_name = "k6"

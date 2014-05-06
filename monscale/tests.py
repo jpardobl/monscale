@@ -11,7 +11,7 @@ SNMP_HOST = "172.21.229.225"
 SNMP_PORT = 161
 SNMP_COMMUNITY = "net1000"
 
-logging.disable(logging.CRITICAL)
+#logging.disable(logging.CRITICAL)
 
 class SOAPTest(TestCase):
 

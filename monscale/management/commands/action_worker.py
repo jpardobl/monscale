@@ -2,6 +2,7 @@ import logging, redis, time
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from monscale.models import ScaleAction
+logging.disable(logging.CRITICAL)
 
 
 class Command(BaseCommand):
@@ -21,7 +22,7 @@ class Command(BaseCommand):
             
             while True:                
                 try:                
-                    action, jutification = ScaleAction.from_redis(action)
+                    action, jutification = ScaleAction.from_redis()
                     action.execute(jutification)
                     
                 except ValueError:
