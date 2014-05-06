@@ -35,6 +35,13 @@ def delete_vm(monitoredservice):
     imp.filter.add('urn:ActionWebService')
     doctor = ImportDoctor(imp)
     proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
-    vmid = proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )[0].id
-    parameters       = "vmid=%s|request_type=vm_retired" % (vmid)
-    print proxy.service.CreateAutomationRequest(version=version, uri_parts=uri_parts, parameters=parameters, requester=requester )
+    vms = proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
+    vmname, vmid = None, None
+    for vm in vms:
+        if vm.retired != True:
+            vmname, vmid = vm.name, vm.id
+            break
+    print vmname, vmid
+    if vmid:
+        parameters       = "vmid=%s|request_type=vm_retired" % (vmid)
+        print proxy.service.CreateAutomationRequest(version=version, uri_parts=uri_parts, parameters=parameters, requester=requester )
