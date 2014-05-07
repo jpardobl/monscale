@@ -1,6 +1,12 @@
 from django.contrib import admin
 from monscale.models import *
 
+
+class ServiceInfrastructureAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(ServiceInfrastructure, ServiceInfrastructureAdmin)
+
+
 class ScaleActionAdmin(admin.ModelAdmin):
     pass
 admin.site.register(ScaleAction, ScaleActionAdmin)

@@ -56,11 +56,13 @@ class ScaleAction(models.Model):
         func(self.data)
         logging.debug("[ScaleAction.execute] finnished")
         ExecutedAction(action=self, justification=justification).save()
+
+        service = self.service.get()
+
+        incremental = 1 if service.scale_type == 'up' else -1
         
-        incremental = 1 if self.service.scale_type == 'up' else -1
-        
-        self.service.infrastructure.current_nodes += incremental
-        self.service.infrastructure.save()
+        service.infrastructure.current_nodes += incremental
+        service.infrastructure.save()
         
     @staticmethod
     def from_redis():        
@@ -141,10 +143,10 @@ class Threshold(models.Model):
 
 
 class ServiceInfrastructure(models.Model):
+    name = models.CharField(max_length=100)
     current_nodes = models.IntegerField(default=0)
     max_nodes = models.IntegerField(default=8) 
     min_nodes = models.IntegerField(default=1)
-    service = models.ForeignKey("MonitoredService", related_name="infrastructure")
      
 SCALE_TYPE = (
     ('up', 'UP'),
@@ -153,10 +155,12 @@ SCALE_TYPE = (
 class MonitoredService(models.Model):
     name = models.CharField(max_length=300, unique=True)
     threshold = models.ManyToManyField(Threshold, blank=True)
-    action = models.ManyToManyField(ScaleAction)
+    action = models.ManyToManyField(ScaleAction, related_name="service")
     active = models.BooleanField(default=True)
     wisdom_time = models.IntegerField(default=120) #secs from last time actions where launch before launching more       
     scale_type = models.CharField(max_length=10, choices=SCALE_TYPE, default='UP')
+    infrastructure = models.ForeignKey(ServiceInfrastructure, related_name="services")
+
     """
     depending on the action, you find here the needed data for that action
     """
