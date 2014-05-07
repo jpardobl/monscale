@@ -17,7 +17,7 @@ class ScaleAction(models.Model):
     data = models.TextField()
     
     def __unicode__(self):
-        return u"%s" % self.name
+        return u"[ScaleAction: %s]" % self.name
     
     def to_dict(self):
         return {
@@ -114,7 +114,7 @@ class Threshold(models.Model):
     value = models.IntegerField() # the value of the threshold
     
     def __unicode__(self):
-        return u"%s" % self.assesment
+        return u"[Threshold: %s]" % self.assesment
     
     def to_dict(self):
         return {
@@ -147,7 +147,10 @@ class ServiceInfrastructure(models.Model):
     current_nodes = models.IntegerField(default=0)
     max_nodes = models.IntegerField(default=8) 
     min_nodes = models.IntegerField(default=1)
-     
+    
+    def __unicode__(self):
+        return u"[Infrastructure for service: %s]" % self.name
+    
 SCALE_TYPE = (
     ('up', 'UP'),
     ('down', 'DOWN'),
@@ -243,7 +246,7 @@ class MonitoredService(models.Model):
         
         
     def __unicode__(self):
-        return u"if %s" % (self.name)
+        return u"[Monitored metric(Escalation %s): %s" % (self.scale_type, self.name)
 
 
 class ExecutedAction(models.Model):
@@ -251,13 +254,20 @@ class ExecutedAction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     justification = models.TextField()
     
-
+    def __unicode__(self):
+        return u"%s - %s, reason: %s" % (self.timestamp, self.action, self.justification)
     
 class AlarmIndicator(models.Model):
     service = models.ForeignKey(MonitoredService, related_name='alarm_indicators', unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return u"ALARM: %s - %s" % (self.timestamp, self.service)
+        
 
 class ActionIndicator(models.Model):
     service = models.ForeignKey(MonitoredService, related_name='action_indicators', unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
+    def __unicode__(self):
+        return u"ACTION: %s - %s" % (self.timestamp, self.service)
