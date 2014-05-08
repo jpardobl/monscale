@@ -149,7 +149,11 @@ class ServiceInfrastructure(models.Model):
         
         
     def __unicode__(self):
-        return u"[Infrastructure for service: %s]" % self.name
+        try: 
+            num = self.current_nodes
+        except:
+            num = "ERROR"
+        return u"[Infrastructure for service: %s (current nodes: %s)]" % (self.name, num)
     
 SCALE_TYPE = (
     ('up', 'UP'),

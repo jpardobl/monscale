@@ -10,7 +10,10 @@ def cloudforms_connect():
     imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
     imp.filter.add('urn:ActionWebService')
     doctor = ImportDoctor(imp)
-    return Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
+    logging.disable(logging.CRITICAL)
+    proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
+    logging.basicConfig(level=settings.LOG_LEVEL)
+    return proxy
     
 def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitoredservice, name=None):
     template_name = "k6"
@@ -25,7 +28,7 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitore
         cores, megabytes, megabytes,settings.CLOUDFORMS_VLAN, settings.CLOUDFORMS_PXE_IMAGE_ID)
     requester      = "owner_email=%s|user_name=%s|owner_last_name=User|owner_first_name=Webservice|owner_country=foremanhostgroup/%s;satprofile/%s;monitoredservice/%s|owner_office=environment/%s;mtype/%s;operating_system/%s;role/%s" % (
             mail, settings.CLOUDFORMS_USERNAME, hostgroup, hostgroup, monitoredservice, environment, mtype, os, role )
-    #print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&: %s" % requester)
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&: %s" % requester)
     tags          = ''
     options       = ''
     proxy = cloudforms_connect()

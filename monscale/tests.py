@@ -5,6 +5,7 @@ from django.conf import settings
 from monscale.mappings.metrics import *
 from monscale.mappings.snmp import get_variable
 from monscale.mappings.actions import launch_cloudforms_vmachine, destroy_cloudforms_vmachine
+from monscale.mappings.cloudforms import get_vms_by_service
 import logging
 
 SNMP_HOST = "172.21.229.225"
@@ -15,6 +16,9 @@ SNMP_COMMUNITY = "net1000"
 
 class SOAPTest(TestCase):
 
+    def test_nums(self):
+        print get_vms_by_service("logstash")
+ 
     def test_create(self):
 	launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
 
