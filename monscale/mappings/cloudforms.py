@@ -3,9 +3,15 @@ from suds.xsd.doctor import Import, ImportDoctor
 from django.conf import settings
 import logging
 
+API_VERSION = "1.1"
 #logging.disable(logging.CRITICAL)
 
-
+def cloudforms_connect():
+    imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
+    imp.filter.add('urn:ActionWebService')
+    doctor = ImportDoctor(imp)
+    return Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
+    
 def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitoredservice, name=None):
     template_name = "k6"
     template_guid = settings.CLOUDFORMS_TEMPLATES[template_name]
@@ -19,32 +25,31 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitore
         cores, megabytes, megabytes,settings.CLOUDFORMS_VLAN, settings.CLOUDFORMS_PXE_IMAGE_ID)
     requester      = "owner_email=%s|user_name=%s|owner_last_name=User|owner_first_name=Webservice|owner_country=foremanhostgroup/%s;satprofile/%s;monitoredservice/%s|owner_office=environment/%s;mtype/%s;operating_system/%s;role/%s" % (
             mail, settings.CLOUDFORMS_USERNAME, hostgroup, hostgroup, monitoredservice, environment, mtype, os, role )
-    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&: %s" % requester)
+    #print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&: %s" % requester)
     tags          = ''
     options       = ''
-    imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
-    imp.filter.add('urn:ActionWebService')
-    doctor = ImportDoctor(imp)
-    proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
-    print proxy.service.EVMProvisionRequestEx(version='1.1', templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
+    proxy = cloudforms_connect()
+    print proxy.service.EVMProvisionRequestEx(version=API_VERSION, templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
 	
 
 def delete_vm(monitoredservice):
     mail           = 'karim@redhat.com'
-    version        = '1.1'
     uri_parts      = "namespace=Karim/RedHat|class=Misc|instance=retire|message=create"
     requester      = "user_name=%s|auto_approve=true|owner_email=%s" % (settings.CLOUDFORMS_USERNAME, mail)
-    imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
-    imp.filter.add('urn:ActionWebService')
-    doctor = ImportDoctor(imp)
-    proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
-    vms = proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
+    proxy = cloudforms_connect()
+    vms = get_vms_by_service(monitoredservice)
     vmname, vmid = None, None
     for vm in vms:
         if vm.retired != True:
             vmname, vmid = vm.name, vm.id
             break
-    print vmname, vmid
+    #print vmname, vmid
     if vmid:
         parameters       = "vmid=%s|request_type=vm_retired" % (vmid)
-        print proxy.service.CreateAutomationRequest(version=version, uri_parts=uri_parts, parameters=parameters, requester=requester )
+        print proxy.service.CreateAutomationRequest(version=API_VERSION, uri_parts=uri_parts, parameters=parameters, requester=requester )
+
+def get_vms_by_service(monitoredservice):
+    
+    proxy = cloudforms_connect()
+    return proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
+    

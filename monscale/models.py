@@ -57,13 +57,7 @@ class ScaleAction(models.Model):
         logging.debug("[ScaleAction.execute] finnished")
         ExecutedAction(action=self, justification=justification).save()
 
-        service = self.service.get()
-
-        incremental = 1 if service.scale_type == 'up' else -1
-        
-        service.infrastructure.current_nodes += incremental
-        service.infrastructure.save()
-        
+       
     @staticmethod
     def from_redis():        
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -144,10 +138,16 @@ class Threshold(models.Model):
 
 class ServiceInfrastructure(models.Model):
     name = models.CharField(max_length=100)
-    current_nodes = models.IntegerField(default=0)
+    #current_nodes = models.IntegerField(default=0)
     max_nodes = models.IntegerField(default=8) 
     min_nodes = models.IntegerField(default=1)
     
+    @property
+    def current_nodes(self):
+        from monscale.mappings.cloudforms import get_vms_by_service
+        return len(get_vms_by_service(self.name))
+        
+        
     def __unicode__(self):
         return u"[Infrastructure for service: %s]" % self.name
     
