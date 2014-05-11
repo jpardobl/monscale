@@ -7,15 +7,20 @@ API_VERSION = "1.1"
 #logging.disable(logging.CRITICAL)
 
 def cloudforms_connect():
+    logging.debug("[cloudforms_connect] connecting to cloudforms")
     imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
     imp.filter.add('urn:ActionWebService')
     doctor = ImportDoctor(imp)
+    logging.debug("[cloudforms_connect] SOAP Doctor initiated")
     logging.disable(logging.CRITICAL)
     proxy = Client(settings.CLOUDFORMS_URL, username=settings.CLOUDFORMS_USERNAME, password=settings.CLOUDFORMS_PASSWORD, doctor=doctor)
-    logging.basicConfig(level=settings.LOG_LEVEL)
+    logging.disable(logging.NOTSET)
+    logging.debug("[cloudforms_connect] connected")
     return proxy
     
 def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitoredservice, name=None):
+
+
     template_name = "k6"
     template_guid = settings.CLOUDFORMS_TEMPLATES[template_name]
     mail = 'karim@redhat.com'
@@ -32,8 +37,11 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitore
     tags          = ''
     options       = ''
     proxy = cloudforms_connect()
+    logging.disable(logging.CRITICAL)
     print proxy.service.EVMProvisionRequestEx(version=API_VERSION, templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
-	
+		
+    logging.disable(logging.NOTSET)
+
 
 def delete_vm(monitoredservice):
     mail           = 'karim@redhat.com'
@@ -49,10 +57,22 @@ def delete_vm(monitoredservice):
     #print vmname, vmid
     if vmid:
         parameters       = "vmid=%s|request_type=vm_retired" % (vmid)
+        logging.disable(logging.CRITICAL)
         print proxy.service.CreateAutomationRequest(version=API_VERSION, uri_parts=uri_parts, parameters=parameters, requester=requester )
+        logging.disable(logging.NOTSET)
 
 def get_vms_by_service(monitoredservice):
     
     proxy = cloudforms_connect()
-    return proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
+    logging.debug("[get_vms_by_service] retrieving vms ...")
+    try:
+        logging.disable(logging.CRITICAL)
+        ret = proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
+        logging.disable(logging.NOTSET)
+        return ret
+    except Exception as er:
+        print "ha habido error"
+        print er
+        logging.error("[get_vms_by_service] POSIBLE ERROR or no VMs with tag %s" % monitoredservice)
+        return []
     

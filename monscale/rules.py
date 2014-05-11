@@ -33,8 +33,9 @@ def set_indicator(ctxt):
     logging.debug("[set_indicator] checking wisdom time before launching any action")
     
     try:
+        
         aindicator = service.action_indicators.all()[0]
-    
+        
         logging.debug("[set_indicator] ::: aindicator in DB")
         """
         If alarm indicator was found in DB means actions where trigger by its timestamp
@@ -48,22 +49,28 @@ def set_indicator(ctxt):
             """
             deleting threshold indicator thus, next indicator will start after the wisdom
             """
-            indicator.delete()
+#            indicator.delete()
             return
         """
         delete the action indicator because wisdom time is over, actions must be launched
         """
         aindicator.delete()
-    except: pass
+    except: 
+        logging.debug("[set_indicator] no action indicator in DB")
 
     try:
-        if service.scale_type == 'down' and service.infrastructure.current_nodes <= service.infrastructure.min_nodes: raise AttributeError("Escalation low limit not passed")             
-        if service.scale_type == 'up' and service.infrastructure.current_nodes >= service.infrastructure.max_nodes: raise AttributeError("Escalation high limit not passed")
+        current_nodes = service.infrastructure.current_nodes
+        logging.debug("[set_indicator] checking scale limits, current: %s" % current_nodes)
+        
+        if service.scale_type == 'down' and current_nodes <= service.infrastructure.min_nodes: raise AttributeError("Escalation low limit not passed")             
+        if service.scale_type == 'up' and current_nodes >= service.infrastructure.max_nodes: raise AttributeError("Escalation high limit not passed")
     except AttributeError, er:
-        logging.info("[set_indicator][scale_limit] %s" % str(er))
+        logging.debug("[set_indicator] scale limit not passed, current: %s" % current_nodes)
         return  
-    
-    
+    except Exception, ex:
+        logging.error("[set_indicator][scale_limit] ERROR: %s" % ex)
+        return    
+    logging.debug("[set_indicator] scale limits passed, launching actions")    
     #lets launch the actions
     for action in service.action.all(): 
         action.to_redis(str(service))

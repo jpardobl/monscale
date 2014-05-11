@@ -144,6 +144,7 @@ class ServiceInfrastructure(models.Model):
     
     @property
     def current_nodes(self):
+        logging.debug("[ServiceInfrastructure.current_nodes] entering ...")
         from monscale.mappings.cloudforms import get_vms_by_service
         return len(get_vms_by_service(self.name))        
     
