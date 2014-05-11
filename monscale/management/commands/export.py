@@ -1,6 +1,6 @@
 import logging, simplejson
 from django.core.management.base import BaseCommand
-from monscale.models import MonitoredService, ScaleAction, Threshold
+from monscale.models import MonitoredService, ScaleAction, Threshold, ServiceInfrastructure
 
 
 class Command(BaseCommand):
@@ -16,6 +16,8 @@ class Command(BaseCommand):
         out = [ x.to_dict() for x in ScaleAction.objects.all()]
             
         out += [ x.to_dict() for x in Threshold.objects.all()]
+        
+        out += [ x.to_dict() for x in ServiceInfrastructure.objects.all()]
         
         out += [ x.to_dict() for x in MonitoredService.objects.all()]
         

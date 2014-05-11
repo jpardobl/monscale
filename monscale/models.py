@@ -137,7 +137,7 @@ class Threshold(models.Model):
 
 
 class ServiceInfrastructure(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     #current_nodes = models.IntegerField(default=0)
     max_nodes = models.IntegerField(default=8) 
     min_nodes = models.IntegerField(default=1)
@@ -145,9 +145,27 @@ class ServiceInfrastructure(models.Model):
     @property
     def current_nodes(self):
         from monscale.mappings.cloudforms import get_vms_by_service
-        return len(get_vms_by_service(self.name))
-        
-        
+        return len(get_vms_by_service(self.name))        
+    
+    def to_dict(self):
+        return {
+            "type": u"ServiceInfrastructure",
+            "name": self.name,
+            "max_nodes": self.max_nodes,
+            "min_nodes": self.min_nodes,    
+            }
+    
+    @staticmethod
+    def from_json(data):
+        data = simplejson.loads(data)
+        t = ServiceInfrastructure(
+            name=data["name"],
+            max_nodes=data["max_nodes"],
+            min_nodes=data["min_nodes"]
+            )
+        t.save()        
+        return t       
+            
     def __unicode__(self):
         try: 
             num = self.current_nodes
@@ -155,10 +173,13 @@ class ServiceInfrastructure(models.Model):
             num = "ERROR"
         return u"[Infrastructure for service: %s (current nodes: %s)]" % (self.name, num)
     
+    
 SCALE_TYPE = (
     ('up', 'UP'),
     ('down', 'DOWN'),
     )  
+
+
 class MonitoredService(models.Model):
     name = models.CharField(max_length=300, unique=True)
     threshold = models.ManyToManyField(Threshold, blank=True)
@@ -192,7 +213,8 @@ class MonitoredService(models.Model):
             "action": [x.name for x in self.action.all()],
             "active": self.active,
             "wisdom_time": self.wisdom_time,
-            "data": simplejson.loads(self.data)}
+            "data": simplejson.loads(self.data),
+            "infrastructure": unicode(self.infrastructure.name)}
         
         
         
@@ -207,13 +229,15 @@ class MonitoredService(models.Model):
             name=data["name"],
             active=data["active"],
             wisdom_time=data["wisdom_time"],
-            data=simplejson.dumps(data["data"]))
+            data=simplejson.dumps(data["data"]),
+            infrastructure=ServiceInfrastructure.objects.get(name=data["infrastructure"]))
         ms.save()
         for d in data["threshold"]:
             print d
             
         [ms.threshold.add(Threshold.objects.get(assesment=d)) for d in data["threshold"]]
         [ms.action.add(ScaleAction.objects.get(name=d)) for d in data["action"]]
+        
         return ms
         
     def to_pypelib(self, value_for_metric=None):       

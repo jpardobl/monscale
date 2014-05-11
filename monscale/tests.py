@@ -17,7 +17,7 @@ SNMP_COMMUNITY = "net1000"
 class SOAPTest(TestCase):
 
     def test_nums(self):
-        print get_vms_by_service("logstash")
+        print len(get_vms_by_service("logstash"))
  
     def test_create(self):
 	launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
