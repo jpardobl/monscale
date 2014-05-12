@@ -10,7 +10,7 @@ the development of new actions and metrics is straight-forward.
 
 The pic below shows the a summary of the components.
 
-![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/05/components-1024x526.png)
+![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/05/components.png)
 
 Each MonitoredService is the relation of:
 
