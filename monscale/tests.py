@@ -20,7 +20,7 @@ class SOAPTest(TestCase):
         print len(get_vms_by_service("logstash"))
  
     def test_create(self):
-	launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
+	    launch_cloudforms_vmachine('{"cores": 1, "megabytes": 1024, "role": "ut", "mtype": "grid", "os": "l", "environment": "lab", "hostgroup": "indexer","monitoredservice": "logstash" }')
 
     def setUp2(self):
 
@@ -75,7 +75,7 @@ class TrapTest(TestCase):
             )
         a.save()
         t = Threshold(
-            assesment="a1",
+            assessment="a1",
             time_limit=10,
             metric="redis_list_length",
             operand=">",
@@ -104,7 +104,7 @@ class TrapTest(TestCase):
             )
         a.save()
         t = Threshold(
-            assesment="a1",
+            assessment="a1",
             time_limit=10,
             metric="redis_list_length",
             operand=">",
@@ -119,7 +119,7 @@ class TrapTest(TestCase):
             )
         a2.save()
         t2 = Threshold(
-            assesment="a2",
+            assessment="a2",
             time_limit=10,
             metric="redis_list_length",
             operand=">",

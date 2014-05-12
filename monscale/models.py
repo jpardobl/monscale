@@ -70,7 +70,7 @@ class ScaleAction(models.Model):
         try:
             act = ScaleAction.objects.get(name=data["name"])
             return (act, data["justification"])
-        except ScaleAction.DoesNotExist, er:
+        except ScaleAction.DoesNotExist as er:
             logging.error("[ScaleAction.from_redis] Action %s came from Redis but not in DB" % data["name"])
             raise er
         
@@ -101,19 +101,19 @@ OPERANDS = (
     )
 
 class Threshold(models.Model):
-    assesment = models.CharField(max_length=300, unique=True)
+    assessment = models.CharField(max_length=300, unique=True)
     time_limit = models.IntegerField() #seconds the threshold must be overtaken before it becomes an alarm
     metric = models.CharField(max_length=100, choices=METRICS) #metric that is going to be monitored. It'll be a mapping.
     operand = models.CharField(max_length=10, choices=OPERANDS)
     value = models.IntegerField() # the value of the threshold
     
     def __unicode__(self):
-        return u"[Threshold: %s]" % self.assesment
+        return u"[Threshold: %s]" % self.assessment
     
     def to_dict(self):
         return {
             "type": u"Threshold",
-            "assesment": unicode(self.assesment),
+            "assessment": unicode(self.assessment),
             "time_limit": self.time_limit,
             "metric": unicode(self.metric),
             "operand": unicode(self.operand),
@@ -126,7 +126,7 @@ class Threshold(models.Model):
     def from_json(data):
         data = simplejson.loads(data)
         t = Threshold(
-            assesment=data["assesment"],
+            assessment=data["assessment"],
             time_limit=data["time_limit"],
             metric=data["metric"],
             operand=data["operand"],
@@ -210,7 +210,7 @@ class MonitoredService(models.Model):
         return {
             "type": u"MonitoredService",
             "name": unicode(self.name),
-            "threshold": [x.assesment for x in self.threshold.all()],
+            "threshold": [x.assessment for x in self.threshold.all()],
             "action": [x.name for x in self.action.all()],
             "active": self.active,
             "wisdom_time": self.wisdom_time,
@@ -236,7 +236,7 @@ class MonitoredService(models.Model):
         for d in data["threshold"]:
             print d
             
-        [ms.threshold.add(Threshold.objects.get(assesment=d)) for d in data["threshold"]]
+        [ms.threshold.add(Threshold.objects.get(assessment=d)) for d in data["threshold"]]
         [ms.action.add(ScaleAction.objects.get(name=d)) for d in data["action"]]
         
         return ms
