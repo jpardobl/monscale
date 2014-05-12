@@ -101,7 +101,7 @@ OPERANDS = (
     )
 
 class Threshold(models.Model):
-    assessment = models.CharField(max_length=300, unique=True)
+    assessment = models.CharField(max_length=255, unique=True)
     time_limit = models.IntegerField() #seconds the threshold must be overtaken before it becomes an alarm
     metric = models.CharField(max_length=100, choices=METRICS) #metric that is going to be monitored. It'll be a mapping.
     operand = models.CharField(max_length=10, choices=OPERANDS)
@@ -182,7 +182,7 @@ SCALE_TYPE = (
 
 
 class MonitoredService(models.Model):
-    name = models.CharField(max_length=300, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     threshold = models.ManyToManyField(Threshold, blank=True)
     action = models.ManyToManyField(ScaleAction, related_name="service")
     active = models.BooleanField(default=True)
@@ -275,7 +275,7 @@ class MonitoredService(models.Model):
         
         
     def __unicode__(self):
-        return u"[Monitored metric(Escalation %s): %s" % (self.scale_type, self.name)
+        return u"[Monitored metric(Escalation %s): %s]" % (self.scale_type, self.name)
 
 
 class ExecutedAction(models.Model):
