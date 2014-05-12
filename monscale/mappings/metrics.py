@@ -62,12 +62,14 @@ def redis_list_length(ctxt):
 def http_content(ctxt):
     """
     ctxt["service"].data = {
-       "url": "...."
+       "url": "....",
+       "content": "....."
     }
     """
     data = _load_data(ctxt["service"].data)
     ret = requests.get(data["url"])
-    return ret.text
+
+    return int(ret.text == data["content"])
 
 mappings = [
     snmp_oid,

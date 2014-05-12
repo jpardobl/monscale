@@ -101,7 +101,6 @@ OPERANDS = (
     ('>=', '>='),    
     )
 
-
 class Threshold(models.Model):
     assessment = models.CharField(max_length=255, unique=True)
     time_limit = models.IntegerField() #seconds the threshold must be overtaken before it becomes an alarm
