@@ -12,23 +12,45 @@ The pic below shows the a summary of the components.
 
 ![alt tag](http://blog.digitalhigh.es/wp-content/uploads/2014/05/components.png)
 
-Each MonitoredService is the relation of:
+Objects explanation
+-------------------
 
-    - A metric.
-    - A condition for that metric
-    - A time the condition must be True
+Infrastructure is splitted in pieces. Each piece relates to the portion of infrastructure that scales up or down
+based on a certain behaviour and a certain automatic operation. For example, a grid of web servers that host
+the the presentation tier for the same application, can be monitored against the same metric (response time) and
+in case it needs to scale, this is done by adding/subtracting web nodes. This behaviour is represented by the
+InfrastructureService Model, which holds the name of the piece of infrastructure, the maximum and minimum nodes it
+is allowed to scale up and down respectively.
+
+Each ServiceInfrastructure is related to one or more MonitoredService obj, which is the relation of:
+
+    - A set of thresholds, each means:
+         - metric to monitor.
+         - A condition for that metric
+         - A time the condition must be in alarm state
     - A wisdom time, this means time from the last triggered action while more actions wont be triggered.
-    - An action must be triggered if the condition was True more seconds than the 
+    - A set of actions (ScaleAction model) that must be triggered if the condition was True more seconds than the
     shown by the threshold.
-    
-Both actions and alerts, are queued in an Redis queue, waiting for the workers to retrieve them from 
-the queues. This makes the system scalable itself.
+
+Every metric read is passed through the rule engine in order to make a scaling decision. If the rules say so, an
+ScaleAction is queued for execution.
+
+Finally we have traps. Al the above explanation is about the active role of the system, by which it asks the
+monitored services about their metrics. Traps are related to its passive role. The system listens for alerts from
+other systems. When an alert is received it is passed through the same rule engine as read metrics.
+
+
+Both actions and alerts are queued in Redis queues, waiting for the workers to retrieve them from
+the queues. This makes the system really scalable itself.
 
 Featured Service Escalation Actions
---------------------------
+-----------------------------------
 
  - Cloudforms 3.0:
       - Send virtual machine provision request
+      - Send virtual machine decomition request
+ - F5 Icontrol:
+      - Scale up/down load balancer pools
  - Amazon Web Services
       - Publish messages to SNS topic
           
@@ -37,6 +59,7 @@ Featured Monitoring Metrics
 
  - Retrieve SNMPv1 and SNMPv2 OID
  - Retrieve Redis list length
+ - Retrieve HTTP response
  
 Installation
 ------------

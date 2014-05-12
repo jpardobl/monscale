@@ -89,6 +89,7 @@ METRICS = (
     ("snmp_oid", "snmp_oid"),
     ("redis_list_length", 'redis_list_length'),
     ("http_response_time", "http_response_time"),
+    ("http_content", "http_content"),
     )
 
    

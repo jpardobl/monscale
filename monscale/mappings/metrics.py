@@ -1,4 +1,4 @@
-import logging, simplejson, redis
+import logging, simplejson, redis, requests
 from snmp import get_variable
 from django.conf import settings
 
@@ -58,7 +58,19 @@ def redis_list_length(ctxt):
     return list_length
 
 
+
+def http_content(ctxt):
+    """
+    ctxt["service"].data = {
+       "url": "...."
+    }
+    """
+    data = _load_data(ctxt["service"].data)
+    ret = requests.get(data["url"])
+    return ret.text
+
 mappings = [
     snmp_oid,
     redis_list_length,
+    http_content,
     ]
