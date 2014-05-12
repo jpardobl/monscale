@@ -26,7 +26,7 @@ def snmp_oid(ctxt):
             data.get("snmp_read_comunity", "public"),
             data["snmp_variable"])
     
-    except Exception, er:
+    except Exception as er:
         logging.error("[metric: snmp_oid] snmp query ERROR: %s" % er)
         return None
     logging.debug("[metric: snmp_oid] snmp query returned: %s" % ret)
@@ -50,7 +50,7 @@ def redis_list_length(ctxt):
             port=data.get("redis_port", 6379), 
             db=data.get("redis_db", 0))
         list_length = r.llen(data["redis_list_name"])
-    except Exception, er:
+    except Exception as er:
         logging.error("[metric: redis_list_length] Exception msg: %s" % er)
         return "[metric: redis_list_length] ERROR trying to rerieve the metric value"
     logging.debug("[metric: redis_list_length] current length: %d" % list_length)

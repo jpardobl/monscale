@@ -8,6 +8,7 @@ from monscale.mappings import get_mappings
 ACTIONS = (
     ('launch_cloudforms_vmachine', 'launch_cloudforms_vmachine'),
     ('destroy_cloudforms_vmachine', 'destroy_cloudforms_vmachine'),
+    ('log_info_message', 'log_info_message'),
     )
 
 

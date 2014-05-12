@@ -1,10 +1,22 @@
-import simplejson
+import simplejson, logging
 from monscale.mappings.cloudforms import start_vm, delete_vm
 from monscale.mappings.aws import publish_msg_to_sns_topic
 from f5 import add_pool_members, del_pool_members
 
 def _load_data(data):
     return simplejson.loads(data)
+
+
+def log_info_message(data):
+    """
+    data = {
+       "message": ".........."
+    }
+    """
+    data = _load_data(data)
+
+    logging.info("[log_info_message] %s" % data["message"])
+
 
 
 def launch_cloudforms_vmachine(data):
@@ -86,5 +98,6 @@ mappings = [
     destroy_cloudforms_vmachine,
     add_f5_pool_members,
     del_f5_pool_members,
-    publish_msg_to_sns_topic, 
+    publish_msg_to_sns_topic,
+    log_info_message,
     ]

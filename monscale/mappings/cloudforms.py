@@ -6,6 +6,7 @@ import logging
 API_VERSION = "1.1"
 #logging.disable(logging.CRITICAL)
 
+
 def cloudforms_connect():
     logging.debug("[cloudforms_connect] connecting to cloudforms")
     imp = Import('http://schemas.xmlsoap.org/soap/encoding/')
@@ -38,7 +39,7 @@ def start_vm(cores, megabytes, role, mtype, os, environment, hostgroup, monitore
     options       = ''
     proxy = cloudforms_connect()
     logging.disable(logging.CRITICAL)
-    print proxy.service.EVMProvisionRequestEx(version=API_VERSION, templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
+    proxy.service.EVMProvisionRequestEx(version=API_VERSION, templateFields=templateFields, vmFields=vmFields, requester=requester, tags=tags, options=options)
 		
     logging.disable(logging.NOTSET)
 
@@ -58,7 +59,7 @@ def delete_vm(monitoredservice):
     if vmid:
         parameters       = "vmid=%s|request_type=vm_retired" % (vmid)
         logging.disable(logging.CRITICAL)
-        print proxy.service.CreateAutomationRequest(version=API_VERSION, uri_parts=uri_parts, parameters=parameters, requester=requester )
+        proxy.service.CreateAutomationRequest(version=API_VERSION, uri_parts=uri_parts, parameters=parameters, requester=requester )
         logging.disable(logging.NOTSET)
 
 def get_vms_by_service(monitoredservice):
@@ -70,9 +71,7 @@ def get_vms_by_service(monitoredservice):
         ret = proxy.service.GetVmsByTag("monitoredservice/%s" % monitoredservice )
         logging.disable(logging.NOTSET)
         return ret
-    except Exception as er:
-        print "ha habido error"
-        print er
+    except Exception:
         logging.error("[get_vms_by_service] POSIBLE ERROR or no VMs with tag %s" % monitoredservice)
         return []
     
