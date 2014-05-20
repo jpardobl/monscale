@@ -1,7 +1,7 @@
 import logging, simplejson, redis, requests
 from snmp import get_variable
 from django.conf import settings
-
+from cloudforms import get_vms_by_service
 
 #logging.basicConfig(level=logging.DEBUG)
 def _load_data(data):
@@ -14,8 +14,7 @@ def snmp_oid(ctxt):
     ctxt["service"].data["host"]                  #default: localhost
     ctxt["service"].data["port"]                  #default: 514
     ctxt["service"].data["snmp_read_comunity"]    #default: public
-    ctxt["service"].data["snmp_mib"]
-    ctxt["service"].data["snmp_variable"]    
+    ctxt["service"].data["snmp_variable"]
     """
     logging.debug("[metric: snmp_oid] Entering  ...")   
     data = _load_data(ctxt["service"].data)
@@ -25,14 +24,58 @@ def snmp_oid(ctxt):
             data.get("port", 514),
             data.get("snmp_read_comunity", "public"),
             data["snmp_variable"])
-    
+        logging.debug("[metric: snmp_oid] snmp query returned: %s" % ret)
+        logging.debug("[metric: snmp_oid] metric ended")
+        return ret
     except Exception as er:
         logging.error("[metric: snmp_oid] snmp query ERROR: %s" % er)
         return None
-    logging.debug("[metric: snmp_oid] snmp query returned: %s" % ret)
-    logging.debug("[metric: snmp_oid] metric ended")
-    return ret
-    
+
+
+def snmp_oid_service_avg(ctxt):
+    """
+    REtrieves service infrastructure from ctxt
+
+    data = {
+       "snmp_read_comunity": "....",
+       "snmp_variable": "...."
+    }
+    """
+
+    try:
+        data = _load_data(ctxt["service"].data)
+
+        monitoredservice = ctxt["service"].infrastructure.name
+
+        machines = get_vms_by_service(monitoredservice)
+        values = []
+
+        for machine in machines:
+            logging.debug("[metric: snmp_oid_service_avg] quering machine: %s " % machine)
+            ret = get_variable(
+                machine,
+                514,
+                data.get("snmp_read_comunity", "public"),
+                data["snmp_variable"])
+            logging.debug("[metric: snmp_oid_service_avg] retrieved: %s " % ret)
+            values.append(ret)
+
+        if not len(values):
+            return 0
+
+        tot = 0
+        for val in values:
+            tot += val
+        tot /= len(values)
+
+        logging.debug("[metric: snmp_oid_service_avg] snmp query returned: %s" % tot)
+        logging.debug("[metric: snmp_oid_service_avg] metric ended")
+    except Exception as er:
+        logging.error("[metric: snmp_oid_service_avg] Exception: %s" % er)
+        return None
+
+
+
     
 def redis_list_length(ctxt):
     """
@@ -73,6 +116,7 @@ def http_content(ctxt):
 
 mappings = [
     snmp_oid,
+    snmp_oid_service_avg
     redis_list_length,
     http_content,
     ]

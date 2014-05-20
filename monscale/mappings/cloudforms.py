@@ -62,6 +62,7 @@ def delete_vm(monitoredservice):
         proxy.service.CreateAutomationRequest(version=API_VERSION, uri_parts=uri_parts, parameters=parameters, requester=requester )
         logging.disable(logging.NOTSET)
 
+
 def get_vms_by_service(monitoredservice):
     
     proxy = cloudforms_connect()

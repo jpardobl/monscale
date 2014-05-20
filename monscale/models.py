@@ -88,10 +88,10 @@ class ScaleAction(models.Model):
         
 METRICS = (
     ("snmp_oid", "snmp_oid"),
+    ("snmp_oid_service_avg", "snmp_oid_service_avg"),
     ("redis_list_length", 'redis_list_length'),
     ("http_response_time", "http_response_time"),
-    ("http_content", "http_content"),
-    )
+    ("http_content", "http_content"),)
 
    
 OPERANDS = (
@@ -99,8 +99,8 @@ OPERANDS = (
     ('<','<'),
     ('=', '='),
     ('<=', '<='),
-    ('>=', '>='),    
-    )
+    ('>=', '>='),)
+
 
 class Threshold(models.Model):
     assessment = models.CharField(max_length=255, unique=True)

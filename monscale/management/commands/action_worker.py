@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 port=settings.REDIS_PORT, 
                 db=settings.REDIS_DB)
         while True:
-            print("[action_worker] starting loop ...")            
+            logging.debug("[action_worker] starting loop ...")
             
             while True:                
                 try:                
