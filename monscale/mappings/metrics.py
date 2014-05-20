@@ -112,7 +112,9 @@ def http_content(ctxt):
     data = _load_data(ctxt["service"].data)
     ret = requests.get(data["url"])
 
-    return int(ret.text == data["content"])
+    logging.debug("[http_content] return: |%s|, type: %s" % (ret.text, type(ret.text)))
+    return int(unicode(ret.text) == unicode(data["content"]))
+
 
 mappings = [
     snmp_oid,
