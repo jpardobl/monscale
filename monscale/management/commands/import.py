@@ -2,7 +2,7 @@ import sys, simplejson
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from monscale.models import MonitoredService, ScaleAction, Threshold, ServiceInfrastructure
-
+from monscale.utils import import_data
 
 class Command(BaseCommand):
     args = ''
@@ -18,34 +18,10 @@ class Command(BaseCommand):
             path = sys.argv[2]
             with open(path) as f: data = f.read()
             print data
-            
-            services = []
-            actions, thresholds, infrastructures = (0 , 0, 0)
 
-            for obj in simplejson.loads(data):                
-                if obj["type"] == u"ScaleAction": 
-                    ScaleAction.from_json(simplejson.dumps(obj))
-                    actions += 1
-                    continue
-                if obj["type"] == u"Threshold": 
-                    thresholds += 1
-                    Threshold.from_json(simplejson.dumps(obj))
-                    continue
-                if obj["type"] == u"ServiceInfrastructure": 
-                    infrastructures += 1
-                    ServiceInfrastructure.from_json(simplejson.dumps(obj))
-                    continue
-                services.append(obj)
-                
-            for service in services:
-                MonitoredService.from_json(simplejson.dumps(service))
-                    
-            self.stdout.write("Successfully imported %s actions, %s thresholds, %s services, %s infrastructures" %(
-                actions, thresholds, len(services)))
-        except IndexError: 
-            self.stderr.write("Need to supply path to data json file")
-            exit(1)
+            import_data(data)
         except IOError:
             self.stderr.write("Error reading data json file: %s" % path)
             exit(1)
+            
 

@@ -24,11 +24,11 @@ def snmp_oid(ctxt):
             data.get("port", 514),
             data.get("snmp_read_comunity", "public"),
             data["snmp_variable"])
-        logging.debug("[metric: snmp_oid] snmp query returned: %s" % ret)
+        print("[metric: snmp_oid] snmp query for machine: %s returned: %s" % (date.get("host", "localhost"), ret))
         logging.debug("[metric: snmp_oid] metric ended")
         return ret
     except Exception as er:
-        logging.error("[metric: snmp_oid] snmp query ERROR: %s" % er)
+        print("[metric: snmp_oid] snmp query ERROR: %s" % er)
         return None
 
 
@@ -41,37 +41,43 @@ def snmp_oid_service_avg(ctxt):
        "snmp_variable": "...."
     }
     """
-
+    import sys
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     try:
         data = _load_data(ctxt["service"].data)
 
         monitoredservice = ctxt["service"].infrastructure.name
 
         machines = get_vms_by_service(monitoredservice)
+#        print("Returned machines: %s" % machines)
         values = []
 
         for machine in machines:
-            logging.debug("[metric: snmp_oid_service_avg] quering machine: %s " % machine)
-            ret = get_variable(
-                machine,
-                514,
-                data.get("snmp_read_comunity", "public"),
-                data["snmp_variable"])
-            logging.debug("[metric: snmp_oid_service_avg] retrieved: %s " % ret)
-            values.append(ret)
+            print("[metric: snmp_oid_service_avg] quering variable %s in machine: %s " % (data["snmp_variable"], machine.name))
+            try:
+                name = machine.name
+                community = data.get("snmp_read_comunity", "public")
+                variable = data["snmp_variable"]
+                print("Machine: %s, Community: %s, variable: %s" % (name, community, variable))      
+                ret = get_variable(name, 514, community, ".1.3.6.1.4.1.2021.11.9.0")
+                print("[metric: snmp_oid_service_avg] retrieved: %s " % ret)
+                values.append(ret)
+            except Exception as err:
+                print("[metric: snmp_oid_service_avg] reading snmp variable from machine %s got error: %s" % (machine.name, err))
 
         if not len(values):
             return 0
 
         tot = 0
-        for val in values:
-            tot += val
+        for val in values:             
+            tot += float(val)
         tot /= len(values)
 
-        logging.debug("[metric: snmp_oid_service_avg] snmp query returned: %s" % tot)
-        logging.debug("[metric: snmp_oid_service_avg] metric ended")
+        print("[metric: snmp_oid_service_avg] snmp query returned: %s" % tot)
+        print("[metric: snmp_oid_service_avg] metric ended")
+        return tot
     except Exception as er:
-        logging.error("[metric: snmp_oid_service_avg] Exception: %s" % er)
+        print("[metric: snmp_oid_service_avg] Exception: %s" % er)
         return None
 
 
@@ -118,7 +124,7 @@ def http_content(ctxt):
 
 mappings = [
     snmp_oid,
-    snmp_oid_service_avg
+    snmp_oid_service_avg,
     redis_list_length,
     http_content,
     ]

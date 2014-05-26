@@ -7,8 +7,9 @@ from monscale.mappings.snmp import get_variable
 from monscale.mappings.actions import launch_cloudforms_vmachine, destroy_cloudforms_vmachine
 from monscale.mappings.cloudforms import get_vms_by_service
 import logging
+from monscale.utils import import_data
 
-SNMP_HOST = "172.21.229.225"
+SNMP_HOST = "utllab238.lab"
 SNMP_PORT = 161
 SNMP_COMMUNITY = "net1000"
 
@@ -35,13 +36,42 @@ class SOAPTest(TestCase):
     def test_delete(self):
         destroy_cloudforms_vmachine('{"monitoredservice": "logstash"}')
 
+    def test_get_vms_by_service(self):
+        print(get_vms_by_service("logstash"))
+
 class MetricTest(TestCase):
     def setUp(self):
         pass
     
-    def test_snmp(self):
+    def test_snmp_tuple(self):
+        print(get_variable(SNMP_HOST, SNMP_PORT, SNMP_COMMUNITY, (1, 3, 6, 1, 4, 1, 2021, 11, 9, 0)))
+
+    def test_snmp_string(self):
         print(get_variable(SNMP_HOST, SNMP_PORT, SNMP_COMMUNITY, ".1.3.6.1.4.1.2021.11.9.0"))
-    
+        
+    def test_snmp_oid(self):
+        with open("test_snmp_oid_avg.json") as f: data = f.read()
+
+        import_data(data)
+
+        ms = MonitoredService.objects.get(name="logstash up scale by cpu")
+        print ms.to_dict()
+        logging.basicConfig(level=logging.DEBUG)
+        logging.debug("launching metric")
+        print(snmp_oid({"service": ms}))
+
+
+    def test_snmp_oid_avg(self):
+        with open("test_snmp_oid_avg.json") as f: data = f.read()
+
+        import_data(data) 
+       
+        ms = MonitoredService.objects.get(name="logstash up scale by cpu")
+        print ms.to_dict()
+        logging.basicConfig(level=logging.DEBUG)
+        logging.debug("launching metric")
+        snmp_oid_service_avg({"service": ms})
+           
 
 class F5Test(TestCase):
     
