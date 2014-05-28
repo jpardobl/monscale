@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-#        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
         
         while True:
             logging.debug("[monitor_worker] starting loop ...")

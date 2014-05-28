@@ -1,4 +1,4 @@
-import logging, simplejson, redis, requests
+import logging, simplejson, redis, requests, re
 from snmp import get_variable
 from django.conf import settings
 from cloudforms import get_vms_by_service
@@ -132,10 +132,37 @@ def http_content(ctxt):
     return int(unicode(ret.text) == unicode(data["content"]))
 
 
+def log4iberia_http_response_time(ctxt):
+    """
+    ctxt["service"].data["redis_host"]  #default: localhost
+    ctxt["service"].data["redis_port"]  #default: 6379
+    ctxt["service"].data["redis_db"]    #default: 0
+
+    uses monitoredservice tag to retrieve
+    """
+    data = _load_data(ctxt["service"].data)
+    r = redis.StrictRedis(
+        host=data.get("redis_host", "localhost"),
+        port=data.get("redis_port", 6379),
+        db=data.get("redis_db", 0))
+
+    monitoredservice = "srvmon.%s" % ctxt["service"].infrastructure.name
+    logging.debug("[metric: log4iberia_http_response_time] retrieving redis key: %s" % monitoredservice)
+    try:
+        value = "%0.0f" % float(r.get(monitoredservice))
+        r.delete(monitoredservice)
+    except Exception as er:
+        logging.error("[metric: log4iberia_http_response_time] ERROR retrieving key: %s - %s" % (monitoredservice, er))
+        return None
+    logging.debug("[metric: log4iberia_http_response_time] retrieved value: %s" % value)
+    return value
+
+
 mappings = [
     number_of_nodes,
     snmp_oid,
     snmp_oid_service_avg,
     redis_list_length,
     http_content,
+    log4iberia_http_response_time,
     ]

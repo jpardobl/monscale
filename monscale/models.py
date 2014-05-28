@@ -92,7 +92,8 @@ METRICS = (
     ("snmp_oid_service_avg", "snmp_oid_service_avg"),
     ("redis_list_length", 'redis_list_length'),
     ("http_response_time", "http_response_time"),
-    ("http_content", "http_content"),)
+    ("http_content", "http_content"),
+    ("log4iberia_http_response_time", "log4iberia_http_response_time"),)
 
    
 OPERANDS = (
