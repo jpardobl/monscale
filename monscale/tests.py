@@ -42,6 +42,18 @@ class SOAPTest(TestCase):
 class MetricTest(TestCase):
     def setUp(self):
         pass
+
+    def test_number_of_nodes(self):
+        with open("test_snmp_oid_avg.json") as f: data = f.read()
+
+        import_data(data)
+
+        ms = MonitoredService.objects.get(name="logstash up scale by cpu")
+        print ms.to_dict()
+        logging.basicConfig(level=logging.DEBUG)
+        logging.debug("launching metric")
+        print("nmumber of nodes: %s" % number_of_nodes({"service": ms}))
+       
     
     def test_snmp_tuple(self):
         print(get_variable(SNMP_HOST, SNMP_PORT, SNMP_COMMUNITY, (1, 3, 6, 1, 4, 1, 2021, 11, 9, 0)))

@@ -87,6 +87,7 @@ class ScaleAction(models.Model):
         super(ScaleAction, self).save()
         
 METRICS = (
+    ("number_of_nodes", "number_of_nodes"),
     ("snmp_oid", "snmp_oid"),
     ("snmp_oid_service_avg", "snmp_oid_service_avg"),
     ("redis_list_length", 'redis_list_length'),
