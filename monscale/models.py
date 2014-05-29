@@ -142,7 +142,14 @@ class Threshold(models.Model):
 
 class ServiceInfrastructure(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    fqdn = models.CharField(max_length=500, unique=True)
+    loadbalanced = models.BooleanField(default=False)
+    loadbalancer_host = models.CharField(max_length=100)
+    loadbalancer_username = models.CharField(max_length=100)
+    loadbalancer_password = models.CharField(max_length=100)
+    loadbalancer_node_port = models.IntegerField()
     #current_nodes = models.IntegerField(default=0)
+
     max_nodes = models.IntegerField(default=8) 
     min_nodes = models.IntegerField(default=1)
     
@@ -170,7 +177,12 @@ class ServiceInfrastructure(models.Model):
             )
         t.save()        
         return t       
-            
+
+    def save(self):
+        if self.loadbalanced and None in (self.loadbalancer_host, self.loadbalancer_password, self.loadbalancer_username):
+            raise AttributeError("Missing load balancer info for balanced infrastructure")
+        super(ServiceInfrastructure, self).save()
+
     def __unicode__(self):
         try: 
             num = self.current_nodes

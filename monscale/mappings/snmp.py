@@ -1,4 +1,4 @@
-import re
+import re, logging
 
 class SNMPError(Exception): pass
 
@@ -7,8 +7,11 @@ try:
     snmp_v = 1
 except:
     #import pynetsnmp as netsnmp
-    from pysnmp.entity.rfc3413.oneliner import cmdgen
-    snmp_v = 2
+    try:
+        from pysnmp.entity.rfc3413.oneliner import cmdgen
+        snmp_v = 2
+    except:
+        logging.error("Could not load snmp support")
 
 
 

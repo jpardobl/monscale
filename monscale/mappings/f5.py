@@ -44,5 +44,22 @@ def get_pool_members(f5_host, f5_username, f5_password, pool_name):
     
     headers = {'content-type': 'application/json'}
     ret = requests.get(url, headers=headers, auth=(f5_username, f5_password), verify=False)
-    return [ m["name"] for m in ret.json()["items"]]
+    ret = ret.json().items()
+
+    for r in ret:
+        if r[0] == "code":
+            code = r[1]
+            continue
+        if r[0] == "message":
+            message = r[1]
+            continue
+        if r[0] == "items":
+            items = r[1]
+            continue
+
+    if items is None and code != 200:
+        raise Exception("Bad return from loadbalancer: %s" % message)
+    print items
+    return [item["name"] for item in items]
+
         

@@ -68,10 +68,10 @@ def add_f5_pool_members(data):
     """
     data = _load_data(data)
     add_pool_members(
-        data["f5_host"], 
-        data["f5_username"], 
-        data["f5_password"], 
-        data["pool_name"], 
+        data["f5_host"],
+        data["f5_username"],
+        data["f5_password"],
+        data["pool_name"],
         data["member_list"])
 
 def del_f5_pool_members(data):
@@ -87,14 +87,14 @@ def del_f5_pool_members(data):
     """
     data = _load_data(data)
     del_pool_members(
-        data["f5_host"], 
-        data["f5_username"], 
-        data["f5_password"], 
-        data["pool_name"], 
+        data["f5_host"],
+        data["f5_username"],
+        data["f5_password"],
+        data["pool_name"],
         data["member_list"])
-    
+
 mappings = [
-    launch_cloudforms_vmachine,   
+    launch_cloudforms_vmachine,
     destroy_cloudforms_vmachine,
     add_f5_pool_members,
     del_f5_pool_members,

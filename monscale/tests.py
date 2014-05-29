@@ -5,15 +5,47 @@ from django.conf import settings
 from monscale.mappings.metrics import *
 from monscale.mappings.snmp import get_variable
 from monscale.mappings.actions import launch_cloudforms_vmachine, destroy_cloudforms_vmachine
+#from monscale.mappings.f5 import
 from monscale.mappings.cloudforms import get_vms_by_service
 import logging
 from monscale.utils import import_data
+from monscale.models import ServiceInfrastructure
+from monscale.loadbalancers import synclb
+
 
 SNMP_HOST = "utllab238.lab"
 SNMP_PORT = 161
 SNMP_COMMUNITY = "net1000"
 
 #logging.disable(logging.CRITICAL)
+
+
+class Synclb(TestCase):
+
+#{"f5_host": "172.21.200.49","f5_username": "admin", "f5_password": "lab5000", "pool_name": "pepito","member_list": ["172.21.200.184:80"]}')
+
+    def setUp(self):
+        ServiceInfrastructure(
+            name="datagrid_rest_service",
+            fqdn="datagrid_rest_service.lab",
+            loadbalancer_host="172.21.200.49",
+            loadbalancer_username="admin",
+            loadbalancer_password="lab5000",
+            loadbalancer_node_port=80,
+            loadbalanced=True,
+            max_nodes=8,
+            min_nodes=1,
+
+        ).save()
+
+
+
+    def test_sync(self):
+        logging.basicConfig(level=logging.DEBUG)
+        synclb()
+
+
+
 
 class SOAPTest(TestCase):
 
