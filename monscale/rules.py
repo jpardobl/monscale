@@ -1,11 +1,13 @@
-from monscale.models import METRICS, Threshold, MonitoredService
-from monscale.mappings import get_mappings
-from pypelib.RuleTable import RuleTable
-from django.conf import settings
-import logging, datetime
+import logging
+import datetime
+
 from pytz import timezone
 from django.conf import settings
+
+from monscale.models import MonitoredService
+from monscale.mappings import get_mappings
 from monscale.models import AlarmIndicator, ActionIndicator
+from naman.naman.pypelib import RuleTable
 
 
 def set_indicator(ctxt):
