@@ -40,7 +40,7 @@ def deploy(*args, **kwargs):
     subprocess.call(["django-admin.py", "startproject", sys.argv[1]])
     os.chdir(sys.argv[1])
     
-    with open(os.path.join(sys.argv[1], "settings.py"), "a") as fw: fw.write(SETTINGS)
+    with open(os.path.join(sys.argv[1], "settings.py.erb"), "a") as fw: fw.write(SETTINGS)
     with open(os.path.join(sys.argv[1], "urls.py"), "a") as fw: fw.write(URLS)
     
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "%s.settings" % sys.argv[1])

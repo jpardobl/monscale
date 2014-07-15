@@ -33,7 +33,6 @@ def synclb():
             "member_list": good_nodes
         }
 
-
         add_f5_pool_members(simplejson.dumps(struc))
         bad_nodes = [item for item in lb_nodes if item not in good_nodes]
 

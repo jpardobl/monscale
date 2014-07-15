@@ -194,7 +194,7 @@ class ServiceInfrastructure(models.Model):
 SCALE_TYPE = (
     ('up', 'UP'),
     ('down', 'DOWN'),
-    )  
+    )
 
 
 class MonitoredService(models.Model):
@@ -210,8 +210,7 @@ class MonitoredService(models.Model):
     depending on the action, you find here the needed data for that action
     """
     data = models.TextField() 
-    
-     
+
     def save(self):
         """
         Need to override to validate json in field data
@@ -250,7 +249,7 @@ class MonitoredService(models.Model):
             infrastructure=ServiceInfrastructure.objects.get(name=data["infrastructure"]))
         ms.save()
         for d in data["threshold"]:
-            print d
+            print(d)
             
         [ms.threshold.add(Threshold.objects.get(assessment=d)) for d in data["threshold"]]
         [ms.action.add(ScaleAction.objects.get(name=d)) for d in data["action"]]
@@ -288,8 +287,7 @@ class MonitoredService(models.Model):
         return (
                 MonitoredService.objects.get(name=trap["obj"]["name"]),
                 trap["rule"],)                
-        
-        
+
     def __unicode__(self):
         return u"[Monitored metric(Escalation %s): %s]" % (self.scale_type, self.name)
 
